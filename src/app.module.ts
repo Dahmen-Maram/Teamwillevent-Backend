@@ -13,6 +13,9 @@ import { SmsModule } from './modules/sms/sms.module';
 // Ici on importe ChatModule (que tu dois créer)
 import { ChatModule } from './modules/chat/chat.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { Task } from './common/models/types/task.entity';
+import { TaskModule } from './modules/task/task.module';
+import { GoogleSheetModule } from './modules/googlesheet/googleSheet.module';
 
 @Module({
   imports: [
@@ -35,7 +38,9 @@ import { NotificationModule } from './modules/notification/notification.module';
     CloudinaryModule,
     SmsModule,
     ChatModule, 
-    NotificationModule ,// <-- ici, on importe le module ChatModule
+    NotificationModule ,
+    TaskModule,
+    GoogleSheetModule// <-- ici, on importe le module ChatModule
   ],
 })
 export class AppModule {}

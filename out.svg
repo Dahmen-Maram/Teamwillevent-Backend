@@ -1,0 +1,1971 @@
+<svg version="1.1" baseProfile="full" width="17483.0" height="734.0" viewBox="0 0 17483 734" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+<desc >#.interface: fill=lightblue
+#.enumeration: fill=lightgreen
+#.type: fill=lightgray
+
+[AppController|-appService: AppService|+getHello(): string]
+[AppModule||]
+[AppService||+getHello(): string]
+[ConfigModule||]
+[JwtAuthGuard||]
+[RolesGuard|-reflector: Reflector|+canActivate(): boolean]
+[&lt;interface&gt;RequestWithUser|+user: { role: string; }|]
+[CanActivate]&lt;:--[RolesGuard]
+[&lt;enumeration&gt;EventStatus|PUBLISHED;PENDING;CANCELLED;REJECTED;DONE]
+[&lt;enumeration&gt;ParticipantStatus|PENDING;APPROVED;REJECTED]
+[&lt;enumeration&gt;UserRole|RESPONSABLE;EMPLOYEE;ADMIN]
+[&lt;enumeration&gt;TaskStatus|PENDING;ACCEPTED;REFUSED]
+[BaseModel|+createdAt: Date;+updatedAt: Date;+deletedAt: Date|]
+[AuthModule||]
+[ChatModule||]
+[CloudinaryModule||]
+[EventsModule||]
+[MailModule||]
+[MailService|-logger: Logger;-transporter: any|+sendForgotPasswordEmail(): Promise&lt;void&gt;;+sendMail(): Promise&lt;void&gt;]
+[NotificationModule||]
+[ParticipantsModule||]
+[SmsModule||]
+[TaskModule||]
+[UserModule||]
+[JwtAuthGuard||]
+[JwtStrategy||+validate(): ValidateResult]
+[&lt;interface&gt;JwtPayload|+sub: string;+role: UserRole|]
+[&lt;interface&gt;ValidateResult|+sub: string;+role: UserRole|]
+[Event|+id: string;+titre: string;+description: string;+date: string;+heure: string;+lieu: string;+capacite: number;+organisateur: User;+participants: Participant\[\];+messages: Message\[\];+status: EventStatus;+imageUrl: string;+formUrl?: string;+tasks: Task\[\];+isPrivate: boolean;+invitedIds: string\[\]|]
+[Message|+id: string;+content: string;+mediaUrl: string;+sender: User;+event: Event;+timestamp: Date;+deletedForAll: boolean;+deletedForUserIds: string\[\];+seenBy: string\[\]|]
+[Notification|+id: string;+title: string;+isRead: boolean;+user: User;+userId: string;+createdAt: Date|]
+[BaseEntity]&lt;:-[Notification]
+[Participant|+id: string;+user: User;+event: Event;+status: ParticipantStatus;+registeredAt: Date|]
+[Task|+id: string;+title: string;+description: string;+event: Event;+assignedTo: User;+status: TaskStatus;+deadline: Date|]
+[User|+id: string;+nom: string;+email: string;+motDePasse: string;+role: UserRole;+phone: string;+department: string;+position: string;+location: string;+avatarUrl: string;+address: string;+participations: Participant\[\];+organizingEvents: Event\[\];+isEmailConfirmed: boolean;+resetToken?: string;+resetTokenExpires?: Date|]
+[BaseModel]&lt;:-[User]
+[MailService|-configService: ConfigService&lt;Record&lt;string \| symbol, unknown&gt;, false&gt;|+sendMail(): Promise&lt;void&gt;]
+[AuthController|-authService: AuthService;-userService: UserService|+register(): Promise&lt;User&gt;;+login(): Promise&lt;{ access_token: string; user: User; }&gt;;+forgotPassword(): Promise&lt;{ message: string; }&gt;;+changePassword(): Promise&lt;{ message: string; }&gt;;+resetPassword(): Promise&lt;{ message: string; }&gt;]
+[AuthService|-userRepository: Repository&lt;User&gt;;-jwtService: JwtService;-mailService: MailService|+validateUser(): Promise&lt;any&gt;;+login(): Promise&lt;{ access_token: string; user: User; }&gt;;+forgotPassword(): Promise&lt;void&gt;;+resetPassword(): Promise&lt;void&gt;;+changePassword(): Promise&lt;void&gt;]
+[ForgotPasswordDto|+email: string|]
+[LoginDto|+email: string;+motDePasse: string|]
+[ResetPasswordDto|+token: string;+newPassword: string|]
+[ChatController|-chatService: ChatService|+createMessage(): Promise&lt;Message&gt;;+countMessages(): Promise&lt;{ count: number; }&gt;]
+[ChatGateway|-logger: Logger;+server: Server&lt;DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any&gt;;-chatService: ChatService;-notificationService: NotificationService;-mailService: MailService;-eventRepository: Repository&lt;Event&gt;|+afterInit(): void;+handleConnection(): void;+handleDisconnect(): void;+handleJoinEvent(): Promise&lt;void&gt;;+handleMarkAsSeen(): Promise&lt;void&gt;;+handleDeleteForMe(): Promise&lt;void&gt;;+handleDeleteForAll(): Promise&lt;void&gt;;+handleJoinUserRoom(): Promise&lt;void&gt;;+handleSendMessage(): Promise&lt;void&gt;;+handleGetMessages(): Promise&lt;any&gt;]
+[OnGatewayInit&lt;T&gt;]&lt;:--[ChatGateway]
+[OnGatewayConnection&lt;T&gt;]&lt;:--[ChatGateway]
+[OnGatewayDisconnect&lt;T&gt;]&lt;:--[ChatGateway]
+[ChatService|-messageRepo: Repository&lt;Message&gt;;-userRepo: Repository&lt;User&gt;;-eventRepo: Repository&lt;Event&gt;;-participantRepo: Repository&lt;Participant&gt;;-notificationService: NotificationService|+saveMessage(): Promise&lt;Message&gt;;+findUserByName(): Promise&lt;User&gt;;+isParticipant(): Promise&lt;boolean&gt;;+markAsSeen(): Promise&lt;void&gt;;+deleteForMe(): Promise&lt;void&gt;;+countAll(): Promise&lt;{ count: number; }&gt;;+deleteForAll(): Promise&lt;void&gt;;+getMessagesForEvent(): Promise&lt;Message\[\]&gt;]
+[CloudinaryController|-cloudinaryService: CloudinaryService;-usersService: UserService|+uploadAvatar(): Promise&lt;{ avatarUrl: string; }&gt;;+uploadEventImage(): Promise&lt;{ imageUrl: string; }&gt;;+uploadChatFile(): Promise&lt;{ url: string; }&gt;]
+[CloudinaryService|-configService: ConfigService&lt;Record&lt;string \| symbol, unknown&gt;, false&gt;|+uploadFromBuffer(): Promise&lt;string&gt;]
+[EventsController|-eventRepository: Repository&lt;Event&gt;;-eventsService: EventsService;-dataSource: DataSource|+create(): Promise&lt;Event&gt;;+findAll(): Promise&lt;Event\[\]&gt;;+addParticipant(): Promise&lt;{ message: string; }&gt;;+findOne(): Promise&lt;Event&gt;;+update(): Promise&lt;Event&gt;;+remove(): Promise&lt;void&gt;]
+[EventsService|-eventRepository: Repository&lt;Event&gt;;-participantRepository: Repository&lt;Participant&gt;;-userService: UserService;-eventEmitter: EventEmitter2;-notificationService: NotificationService;-mailService: MailService|+create(): Promise&lt;Event&gt;;+addParticipantToEvent(): Promise&lt;void&gt;;+findAll(): Promise&lt;Event\[\]&gt;;+findOne(): Promise&lt;Event&gt;;+update(): Promise&lt;Event&gt;;+remove(): Promise&lt;void&gt;;+updateEventStatusIfNeeded(): Promise&lt;Event&gt;]
+[CreateEventDto|+titre: string;+description: string;+date: string;+heure: string;+lieu: string;+capacite: number;+formUrl: string;+imageUrl?: string;+isPrivate?: boolean;+invitedIds?: string\[\]|]
+[UpdateEventDto|+titre?: string;+description?: string;+date?: string;+lieu?: string;+capacite?: number;+heure?: string;+status?: string;+formUrl: string;+isPrivate?: boolean;+invitedUserIds?: string\[\]|]
+[EventCreatedListener|-mailService: MailService;-userService: UserService;-eventService: EventsService|+handleEventCreatedEvent(): Promise&lt;void&gt;]
+[&lt;interface&gt;EventCreatedPayload|+eventId: string;+titre: string|]
+[NotificationController|-notificationService: NotificationService|+getNotifications(): Promise&lt;Notification\[\]&gt;;+markAsRead(): Promise&lt;void&gt;;+markAllAsRead(): Promise&lt;void&gt;;+getUnreadCount(): Promise&lt;number&gt;;+createNotification(): Promise&lt;any&gt;;+getAllNotifications(): Promise&lt;Notification\[\]&gt;]
+[NotificationService|-notifRepo: Repository&lt;Notification&gt;|+create(): Promise&lt;any&gt;;+markAllAsRead(): Promise&lt;void&gt;;+markOneAsRead(): Promise&lt;void&gt;;+findForUser(): Promise&lt;Notification\[\]&gt;;+countUnread(): Promise&lt;number&gt;;+findAll(): Promise&lt;Notification\[\]&gt;]
+[NotificationDto|+id: string;+type: &quot;event&quot; \| &quot;message&quot; \| &quot;task&quot; \| &quot;other&quot;;+eventId?: string;+messageId?: string;+title: string;+isRead: boolean;+createdAt: Date|]
+[ParticipantsController|-participantsService: ParticipantsService|+register(): Promise&lt;Participant&gt;;+findAll(): Promise&lt;Participant\[\]&gt;;+findByEvent(): Promise&lt;Participant\[\]&gt;;+remove(): Promise&lt;void&gt;;+removeByEventAndUser(): Promise&lt;void&gt;;+getByUser(): Promise&lt;Participant\[\]&gt;]
+[ParticipantsService|-participantRepo: Repository&lt;Participant&gt;;-userService: UserService;-eventsService: EventsService;-mailService: MailService;-notificationService: NotificationService|+create(): Promise&lt;Participant&gt;;+findAll(): Promise&lt;Participant\[\]&gt;;+findByEvent(): Promise&lt;Participant\[\]&gt;;+remove(): Promise&lt;void&gt;;+removeByEventAndUser(): Promise&lt;void&gt;;+findByUser(): Promise&lt;Participant\[\]&gt;]
+[CreateParticipantDto|+userId: string;+eventId: string|]
+[UpdateParticipantDto||]
+[SmsController|-smsService: SmsService|+sendSms(): Promise&lt;any&gt;]
+[SmsService|-vonage: Vonage|+sendSms(): Promise&lt;any&gt;]
+[TaskController|-taskService: TaskService|+createTask(): Promise&lt;any&gt;;+updateDeadline(): Promise&lt;any&gt;;+updateStatus(): Promise&lt;any&gt;;+updateAssignedUser(): Promise&lt;any&gt;;+updateTitle(): Promise&lt;any&gt;;+updateDescription(): Promise&lt;any&gt;;+deleteTask(): Promise&lt;Task&gt;;+getTasksByEvent(): Promise&lt;Task\[\]&gt;;+getTasksByUser(): Promise&lt;Task\[\]&gt;]
+[TaskService|-taskRepository: Repository&lt;Task&gt;;-eventRepository: Repository&lt;Event&gt;;-userRepository: Repository&lt;User&gt;;-mailService: MailService;-notificationService: NotificationService|+createTask(): Promise&lt;any&gt;;+updateStatus(): Promise&lt;any&gt;;+updateAssignedUser(): Promise&lt;any&gt;;+updateTitle(): Promise&lt;any&gt;;+updateDescription(): Promise&lt;any&gt;;+updateDeadline(): Promise&lt;any&gt;;+deleteTask(): Promise&lt;Task&gt;;+getTasksByEvent(): Promise&lt;Task\[\]&gt;;+getTasksByUser(): Promise&lt;Task\[\]&gt;]
+[CreateTaskDto|+title: string;+description: string;+deadline?: Date|]
+[UserController|-userService: UserService|+getProfile(): Promise&lt;User&gt;;+create(): Promise&lt;User&gt;;+findAll(): Promise&lt;User\[\]&gt;;+update(): Promise&lt;User&gt;;+remove(): Promise&lt;void&gt;;+updateProfile(): Promise&lt;User&gt;;+participate(): Promise&lt;{ message: string; }&gt;;+uploadCSV(): Promise&lt;unknown&gt;]
+[&lt;type&gt;CsvUser|+nom: string;+email: string;+phone: string;+role: string;+department: string;+position: string;+location: string;+address: string;+motDePasse?: string|]
+[UserService|-userRepository: Repository&lt;User&gt;;-eventRepository: Repository&lt;Event&gt;;-participantRepository: Repository&lt;Participant&gt;|+create(): Promise&lt;User&gt;;+findAllExceptUser(): Promise&lt;User\[\]&gt;;+findManyByIds(): Promise&lt;User\[\]&gt;;+findOne(): Promise&lt;User&gt;;+findAll(): Promise&lt;User\[\]&gt;;+updateAvatarUrl(): Promise&lt;void&gt;;+remove(): Promise&lt;void&gt;;+update(): Promise&lt;User&gt;;+participate(): Promise&lt;Participant&gt;;+findByEmail(): Promise&lt;any&gt;;+findById(): Promise&lt;any&gt;;+updateUser(): Promise&lt;any&gt;]
+[CreateUserDto|+nom: string;+email: string;+motDePasse: string;+phone: string;+role: UserRole;+department: string;+position: string;+location: string;+address: string|]
+[UpdateUserDto|+nom?: string;+email?: string;+phone?: string;+role?: UserRole;+department?: string;+position?: string;+location?: string;+address?: string|]</desc>
+<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="normal" font-style="normal">
+<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+<g stroke="transparent" fill="transparent">
+<rect x="0.0" y="0.0" height="734.0" width="17483.0" stroke="none"></rect>
+</g>
+<g transform="translate(8, 8)" fill="#33322E">
+<g transform="translate(20, 20)" fill="#eee8d5" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal">
+<g stroke-dasharray="6 6">
+<path d="M1186.5 186.8 L1186.5 335 L1186.5 468.5 L1186.5 468.5 " fill="none"></path>
+</g>
+<path d="M1191.8 186.8 L1186.5 186.8 L1181.2 186.8 L1186.5 173.5 Z"></path>
+<path d="M5448.0 186.8 L5448 335 L5448 440 L5448.0 440.0 " fill="none"></path>
+<path d="M5453.3 186.8 L5448.0 186.8 L5442.7 186.8 L5448.0 173.5 Z"></path>
+<path d="M2032.0 223.3 L2032 335 L2032 359 L2032.0 359.0 " fill="none"></path>
+<path d="M2037.3 223.3 L2032.0 223.3 L2026.7 223.3 L2032.0 210.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M7971.0 186.8 L7971 335 L7996.895316804408 355 L7996.9 355.0 " fill="none"></path>
+</g>
+<path d="M7976.3 186.8 L7971.0 186.8 L7965.7 186.8 L7971.0 173.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M8206.0 186.8 L8206 335 L8206 355 L8206.0 355.0 " fill="none"></path>
+</g>
+<path d="M8211.3 186.8 L8206.0 186.8 L8200.7 186.8 L8206.0 173.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M8473.0 186.8 L8473 335 L8443.578512396694 355 L8443.6 355.0 " fill="none"></path>
+</g>
+<path d="M8478.3 186.8 L8473.0 186.8 L8467.7 186.8 L8473.0 173.5 Z"></path>
+<g data-name="AppController">
+<g fill="#eee8d5" stroke="#33322E" data-name="AppController">
+<rect x="0.0" y="109.5" height="96.0" width="211.0" data-name="AppController"></rect>
+<path d="M0.0 141.5 L211.0 141.5" fill="none" data-name="AppController"></path>
+<path d="M0.0 173.5 L211.0 173.5" fill="none" data-name="AppController"></path>
+</g>
+<g transform="translate(0, 109.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AppController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AppController" data-compartment="0">
+<a id="src\app.controller.ts.AppController" xlink:href="src\app.controller.ts"><text x="97.5" y="14.1" stroke="none" text-anchor="middle" data-name="AppController" data-compartment="0">AppController</text></a>
+
+</g>
+</g>
+<g transform="translate(0, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AppController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="AppController" data-compartment="1">-appService: AppService</text>
+
+</g>
+</g>
+<g transform="translate(0, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AppController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="AppController" data-compartment="2">+getHello(): string</text>
+
+</g>
+</g>
+</g>
+<g data-name="AppModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="AppModule">
+<rect x="251.0" y="133.5" height="48.0" width="105.0" data-name="AppModule"></rect>
+<path d="M251.0 165.5 L356.0 165.5" fill="none" data-name="AppModule"></path>
+<path d="M251.0 173.5 L356.0 173.5" fill="none" data-name="AppModule"></path>
+</g>
+<g transform="translate(251, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AppModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AppModule" data-compartment="0">
+<a id="src\app.module.ts.AppModule" xlink:href="src\app.module.ts"><text x="44.5" y="14.1" stroke="none" text-anchor="middle" data-name="AppModule" data-compartment="0">AppModule</text></a>
+
+</g>
+</g>
+<g transform="translate(251, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AppModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(251, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AppModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="AppService">
+<g fill="#eee8d5" stroke="#33322E" data-name="AppService">
+<rect x="396.0" y="121.5" height="72.0" width="157.0" data-name="AppService"></rect>
+<path d="M396.0 153.5 L553.0 153.5" fill="none" data-name="AppService"></path>
+<path d="M396.0 161.5 L553.0 161.5" fill="none" data-name="AppService"></path>
+</g>
+<g transform="translate(396, 121.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AppService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AppService" data-compartment="0">
+<a id="src\app.service.ts.AppService" xlink:href="src\app.service.ts"><text x="70.5" y="14.1" stroke="none" text-anchor="middle" data-name="AppService" data-compartment="0">AppService</text></a>
+
+</g>
+</g>
+<g transform="translate(396, 153.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AppService" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(396, 161.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AppService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="AppService" data-compartment="2">+getHello(): string</text>
+
+</g>
+</g>
+</g>
+<g data-name="ConfigModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="ConfigModule">
+<rect x="593.0" y="133.5" height="48.0" width="125.0" data-name="ConfigModule"></rect>
+<path d="M593.0 165.5 L718.0 165.5" fill="none" data-name="ConfigModule"></path>
+<path d="M593.0 173.5 L718.0 173.5" fill="none" data-name="ConfigModule"></path>
+</g>
+<g transform="translate(593, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ConfigModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ConfigModule" data-compartment="0">
+<a id="src\config.module.ts.ConfigModule" xlink:href="src\config.module.ts"><text x="54.5" y="14.1" stroke="none" text-anchor="middle" data-name="ConfigModule" data-compartment="0">ConfigModule</text></a>
+
+</g>
+</g>
+<g transform="translate(593, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ConfigModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ConfigModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(593, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ConfigModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ConfigModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="JwtAuthGuard">
+<g fill="#eee8d5" stroke="#33322E" data-name="JwtAuthGuard">
+<rect x="758.0" y="133.5" height="48.0" width="127.0" data-name="JwtAuthGuard"></rect>
+<path d="M758.0 165.5 L885.0 165.5" fill="none" data-name="JwtAuthGuard"></path>
+<path d="M758.0 173.5 L885.0 173.5" fill="none" data-name="JwtAuthGuard"></path>
+</g>
+<g transform="translate(758, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="JwtAuthGuard" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JwtAuthGuard" data-compartment="0">
+<a id="src\common\auth\guards\jwt-auth.guard.ts.JwtAuthGuard" xlink:href="src\common\auth\guards\jwt-auth.guard.ts"><text x="55.5" y="14.1" stroke="none" text-anchor="middle" data-name="JwtAuthGuard" data-compartment="0">JwtAuthGuard</text></a>
+
+</g>
+</g>
+<g transform="translate(758, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtAuthGuard" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JwtAuthGuard" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(758, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtAuthGuard" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JwtAuthGuard" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="RolesGuard">
+<g fill="#eee8d5" stroke="#33322E" data-name="RolesGuard">
+<rect x="1084.5" y="468.5" height="96.0" width="204.0" data-name="RolesGuard"></rect>
+<path d="M1084.5 500.5 L1288.5 500.5" fill="none" data-name="RolesGuard"></path>
+<path d="M1084.5 532.5 L1288.5 532.5" fill="none" data-name="RolesGuard"></path>
+</g>
+<g transform="translate(1084.5, 468.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="RolesGuard" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="RolesGuard" data-compartment="0">
+<a id="src\guards\roles.guard.ts.RolesGuard" xlink:href="src\guards\roles.guard.ts"><text x="94.0" y="14.1" stroke="none" text-anchor="middle" data-name="RolesGuard" data-compartment="0">RolesGuard</text></a>
+
+</g>
+</g>
+<g transform="translate(1084.5, 500.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RolesGuard" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="RolesGuard" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="RolesGuard" data-compartment="1">-reflector: Reflector</text>
+
+</g>
+</g>
+<g transform="translate(1084.5, 532.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RolesGuard" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="RolesGuard" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="RolesGuard" data-compartment="2">+canActivate(): boolean</text>
+
+</g>
+</g>
+</g>
+<g data-name="RequestWithUser">
+<g fill="lightblue" stroke="#33322E" data-name="RequestWithUser">
+<rect x="925.0" y="113.5" height="88.0" width="166.0" data-name="RequestWithUser"></rect>
+<path d="M925.0 145.5 L1091.0 145.5" fill="none" data-name="RequestWithUser"></path>
+<path d="M925.0 193.5 L1091.0 193.5" fill="none" data-name="RequestWithUser"></path>
+</g>
+<g transform="translate(925, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RequestWithUser" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="RequestWithUser" data-compartment="0">
+<a id="src\guards\roles.guard.ts.RequestWithUser" xlink:href="src\guards\roles.guard.ts"><text x="75.0" y="14.1" stroke="none" text-anchor="middle" data-name="RequestWithUser" data-compartment="0">RequestWithUser</text></a>
+
+</g>
+</g>
+<g transform="translate(925, 145.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RequestWithUser" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="RequestWithUser" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="RequestWithUser" data-compartment="1">+user: { role: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="RequestWithUser" data-compartment="1">}</text>
+
+</g>
+</g>
+<g transform="translate(925, 193.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RequestWithUser" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="RequestWithUser" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="CanActivate">
+<g fill="#eee8d5" stroke="#33322E" data-name="CanActivate">
+<rect x="1131.0" y="141.5" height="32.0" width="111.0" data-name="CanActivate"></rect>
+</g>
+<g transform="translate(1131, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CanActivate" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CanActivate" data-compartment="0">
+<text x="47.5" y="14.1" stroke="none" text-anchor="middle" data-name="CanActivate" data-compartment="0">CanActivate</text>
+
+</g>
+</g>
+</g>
+<g data-name="EventStatus">
+<g fill="lightgreen" stroke="#33322E" data-name="EventStatus">
+<rect x="1282.0" y="93.0" height="129.0" width="117.0" data-name="EventStatus"></rect>
+<path d="M1282.0 125.0 L1399.0 125.0" fill="none" data-name="EventStatus"></path>
+</g>
+<g transform="translate(1282, 93)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventStatus" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EventStatus" data-compartment="0">
+<a id="src\common\enum\eventStatus.enum.ts.EventStatus" xlink:href="src\common\enum\eventStatus.enum.ts"><text x="50.5" y="14.1" stroke="none" text-anchor="middle" data-name="EventStatus" data-compartment="0">EventStatus</text></a>
+
+</g>
+</g>
+<g transform="translate(1282, 125)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventStatus" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EventStatus" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="EventStatus" data-compartment="1">PUBLISHED</text>
+<text x="0.0" y="30.3" stroke="none" data-name="EventStatus" data-compartment="1">PENDING</text>
+<text x="0.0" y="46.5" stroke="none" data-name="EventStatus" data-compartment="1">CANCELLED</text>
+<text x="0.0" y="62.7" stroke="none" data-name="EventStatus" data-compartment="1">REJECTED</text>
+<text x="0.0" y="78.9" stroke="none" data-name="EventStatus" data-compartment="1">DONE</text>
+
+</g>
+</g>
+</g>
+<g data-name="ParticipantStatus">
+<g fill="lightgreen" stroke="#33322E" data-name="ParticipantStatus">
+<rect x="1439.0" y="109.0" height="97.0" width="150.0" data-name="ParticipantStatus"></rect>
+<path d="M1439.0 141.0 L1589.0 141.0" fill="none" data-name="ParticipantStatus"></path>
+</g>
+<g transform="translate(1439, 109)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParticipantStatus" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ParticipantStatus" data-compartment="0">
+<a id="src\common\enum\participantStatus.enum.ts.ParticipantStatus" xlink:href="src\common\enum\participantStatus.enum.ts"><text x="67.0" y="14.1" stroke="none" text-anchor="middle" data-name="ParticipantStatus" data-compartment="0">ParticipantStatus</text></a>
+
+</g>
+</g>
+<g transform="translate(1439, 141)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParticipantStatus" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ParticipantStatus" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ParticipantStatus" data-compartment="1">PENDING</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ParticipantStatus" data-compartment="1">APPROVED</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ParticipantStatus" data-compartment="1">REJECTED</text>
+
+</g>
+</g>
+</g>
+<g data-name="UserRole">
+<g fill="lightgreen" stroke="#33322E" data-name="UserRole">
+<rect x="1629.0" y="109.0" height="97.0" width="140.0" data-name="UserRole"></rect>
+<path d="M1629.0 141.0 L1769.0 141.0" fill="none" data-name="UserRole"></path>
+</g>
+<g transform="translate(1629, 109)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserRole" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UserRole" data-compartment="0">
+<a id="src\common\enum\role.enum.ts.UserRole" xlink:href="src\common\enum\role.enum.ts"><text x="62.0" y="14.1" stroke="none" text-anchor="middle" data-name="UserRole" data-compartment="0">UserRole</text></a>
+
+</g>
+</g>
+<g transform="translate(1629, 141)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserRole" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserRole" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="UserRole" data-compartment="1">RESPONSABLE</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UserRole" data-compartment="1">EMPLOYEE</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UserRole" data-compartment="1">ADMIN</text>
+
+</g>
+</g>
+</g>
+<g data-name="TaskStatus">
+<g fill="lightgreen" stroke="#33322E" data-name="TaskStatus">
+<rect x="1809.0" y="109.0" height="97.0" width="106.0" data-name="TaskStatus"></rect>
+<path d="M1809.0 141.0 L1915.0 141.0" fill="none" data-name="TaskStatus"></path>
+</g>
+<g transform="translate(1809, 109)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TaskStatus" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TaskStatus" data-compartment="0">
+<a id="src\common\enum\task-status.enum.ts.TaskStatus" xlink:href="src\common\enum\task-status.enum.ts"><text x="45.0" y="14.1" stroke="none" text-anchor="middle" data-name="TaskStatus" data-compartment="0">TaskStatus</text></a>
+
+</g>
+</g>
+<g transform="translate(1809, 141)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TaskStatus" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TaskStatus" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="TaskStatus" data-compartment="1">PENDING</text>
+<text x="0.0" y="30.3" stroke="none" data-name="TaskStatus" data-compartment="1">ACCEPTED</text>
+<text x="0.0" y="46.5" stroke="none" data-name="TaskStatus" data-compartment="1">REFUSED</text>
+
+</g>
+</g>
+</g>
+<g data-name="BaseModel">
+<g fill="#eee8d5" stroke="#33322E" data-name="BaseModel">
+<rect x="1955.0" y="105.0" height="105.0" width="154.0" data-name="BaseModel"></rect>
+<path d="M1955.0 137.0 L2109.0 137.0" fill="none" data-name="BaseModel"></path>
+<path d="M1955.0 202.0 L2109.0 202.0" fill="none" data-name="BaseModel"></path>
+</g>
+<g transform="translate(1955, 105)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="BaseModel" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseModel" data-compartment="0">
+<a id="src\common\models\base-model.ts.BaseModel" xlink:href="src\common\models\base-model.ts"><text x="69.0" y="14.1" stroke="none" text-anchor="middle" data-name="BaseModel" data-compartment="0">BaseModel</text></a>
+
+</g>
+</g>
+<g transform="translate(1955, 137)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseModel" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseModel" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="BaseModel" data-compartment="1">+createdAt: Date</text>
+<text x="0.0" y="30.3" stroke="none" data-name="BaseModel" data-compartment="1">+updatedAt: Date</text>
+<text x="0.0" y="46.5" stroke="none" data-name="BaseModel" data-compartment="1">+deletedAt: Date</text>
+
+</g>
+</g>
+<g transform="translate(1955, 202)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseModel" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseModel" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="AuthModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthModule">
+<rect x="2149.0" y="133.5" height="48.0" width="110.0" data-name="AuthModule"></rect>
+<path d="M2149.0 165.5 L2259.0 165.5" fill="none" data-name="AuthModule"></path>
+<path d="M2149.0 173.5 L2259.0 173.5" fill="none" data-name="AuthModule"></path>
+</g>
+<g transform="translate(2149, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthModule" data-compartment="0">
+<a id="src\modules\auth\auth.module.ts.AuthModule" xlink:href="src\modules\auth\auth.module.ts"><text x="47.0" y="14.1" stroke="none" text-anchor="middle" data-name="AuthModule" data-compartment="0">AuthModule</text></a>
+
+</g>
+</g>
+<g transform="translate(2149, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AuthModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(2149, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AuthModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="ChatModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="ChatModule">
+<rect x="2299.0" y="133.5" height="48.0" width="111.0" data-name="ChatModule"></rect>
+<path d="M2299.0 165.5 L2410.0 165.5" fill="none" data-name="ChatModule"></path>
+<path d="M2299.0 173.5 L2410.0 173.5" fill="none" data-name="ChatModule"></path>
+</g>
+<g transform="translate(2299, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ChatModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ChatModule" data-compartment="0">
+<a id="src\modules\chat\chat.module.ts.ChatModule" xlink:href="src\modules\chat\chat.module.ts"><text x="47.5" y="14.1" stroke="none" text-anchor="middle" data-name="ChatModule" data-compartment="0">ChatModule</text></a>
+
+</g>
+</g>
+<g transform="translate(2299, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ChatModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ChatModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(2299, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ChatModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ChatModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="CloudinaryModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="CloudinaryModule">
+<rect x="2450.0" y="133.5" height="48.0" width="159.0" data-name="CloudinaryModule"></rect>
+<path d="M2450.0 165.5 L2609.0 165.5" fill="none" data-name="CloudinaryModule"></path>
+<path d="M2450.0 173.5 L2609.0 173.5" fill="none" data-name="CloudinaryModule"></path>
+</g>
+<g transform="translate(2450, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CloudinaryModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CloudinaryModule" data-compartment="0">
+<a id="src\modules\cloudinary\cloudinary.module.ts.CloudinaryModule" xlink:href="src\modules\cloudinary\cloudinary.module.ts"><text x="71.5" y="14.1" stroke="none" text-anchor="middle" data-name="CloudinaryModule" data-compartment="0">CloudinaryModule</text></a>
+
+</g>
+</g>
+<g transform="translate(2450, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CloudinaryModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CloudinaryModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(2450, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CloudinaryModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CloudinaryModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="EventsModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="EventsModule">
+<rect x="2649.0" y="133.5" height="48.0" width="128.0" data-name="EventsModule"></rect>
+<path d="M2649.0 165.5 L2777.0 165.5" fill="none" data-name="EventsModule"></path>
+<path d="M2649.0 173.5 L2777.0 173.5" fill="none" data-name="EventsModule"></path>
+</g>
+<g transform="translate(2649, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="EventsModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EventsModule" data-compartment="0">
+<a id="src\modules\event\event.module.ts.EventsModule" xlink:href="src\modules\event\event.module.ts"><text x="56.0" y="14.1" stroke="none" text-anchor="middle" data-name="EventsModule" data-compartment="0">EventsModule</text></a>
+
+</g>
+</g>
+<g transform="translate(2649, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventsModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="EventsModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(2649, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventsModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="EventsModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="MailModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="MailModule">
+<rect x="2817.0" y="133.5" height="48.0" width="106.0" data-name="MailModule"></rect>
+<path d="M2817.0 165.5 L2923.0 165.5" fill="none" data-name="MailModule"></path>
+<path d="M2817.0 173.5 L2923.0 173.5" fill="none" data-name="MailModule"></path>
+</g>
+<g transform="translate(2817, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="MailModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MailModule" data-compartment="0">
+<a id="src\modules\mail\mail.module.ts.MailModule" xlink:href="src\modules\mail\mail.module.ts"><text x="45.0" y="14.1" stroke="none" text-anchor="middle" data-name="MailModule" data-compartment="0">MailModule</text></a>
+
+</g>
+</g>
+<g transform="translate(2817, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MailModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MailModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(2817, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MailModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MailModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="MailService">
+<g fill="#eee8d5" stroke="#33322E" data-name="MailService">
+<rect x="2963.0" y="93.5" height="128.0" width="375.0" data-name="MailService"></rect>
+<path d="M2963.0 125.5 L3338.0 125.5" fill="none" data-name="MailService"></path>
+<path d="M2963.0 173.5 L3338.0 173.5" fill="none" data-name="MailService"></path>
+</g>
+<g transform="translate(2963, 93.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="MailService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MailService" data-compartment="0">
+<a id="src\common\utils\mail\mail.service.ts.MailService" xlink:href="src\common\utils\mail\mail.service.ts"><text x="179.5" y="14.1" stroke="none" text-anchor="middle" data-name="MailService" data-compartment="0">MailService</text></a>
+
+</g>
+</g>
+<g transform="translate(2963, 125.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MailService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MailService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="MailService" data-compartment="1">-logger: Logger</text>
+<text x="0.0" y="30.3" stroke="none" data-name="MailService" data-compartment="1">-transporter: any</text>
+
+</g>
+</g>
+<g transform="translate(2963, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MailService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MailService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="MailService" data-compartment="2">+sendForgotPasswordEmail(): Promise&lt;void&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="MailService" data-compartment="2">+sendMail(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="NotificationModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="NotificationModule">
+<rect x="3378.0" y="133.5" height="48.0" width="162.0" data-name="NotificationModule"></rect>
+<path d="M3378.0 165.5 L3540.0 165.5" fill="none" data-name="NotificationModule"></path>
+<path d="M3378.0 173.5 L3540.0 173.5" fill="none" data-name="NotificationModule"></path>
+</g>
+<g transform="translate(3378, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="NotificationModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="NotificationModule" data-compartment="0">
+<a id="src\modules\notification\notification.module.ts.NotificationModule" xlink:href="src\modules\notification\notification.module.ts"><text x="73.0" y="14.1" stroke="none" text-anchor="middle" data-name="NotificationModule" data-compartment="0">NotificationModule</text></a>
+
+</g>
+</g>
+<g transform="translate(3378, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NotificationModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="NotificationModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(3378, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NotificationModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="NotificationModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="ParticipantsModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="ParticipantsModule">
+<rect x="3580.0" y="133.5" height="48.0" width="167.0" data-name="ParticipantsModule"></rect>
+<path d="M3580.0 165.5 L3747.0 165.5" fill="none" data-name="ParticipantsModule"></path>
+<path d="M3580.0 173.5 L3747.0 173.5" fill="none" data-name="ParticipantsModule"></path>
+</g>
+<g transform="translate(3580, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ParticipantsModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ParticipantsModule" data-compartment="0">
+<a id="src\modules\participant\participant.module.ts.ParticipantsModule" xlink:href="src\modules\participant\participant.module.ts"><text x="75.5" y="14.1" stroke="none" text-anchor="middle" data-name="ParticipantsModule" data-compartment="0">ParticipantsModule</text></a>
+
+</g>
+</g>
+<g transform="translate(3580, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParticipantsModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ParticipantsModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(3580, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParticipantsModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ParticipantsModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="SmsModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="SmsModule">
+<rect x="3787.0" y="133.5" height="48.0" width="108.0" data-name="SmsModule"></rect>
+<path d="M3787.0 165.5 L3895.0 165.5" fill="none" data-name="SmsModule"></path>
+<path d="M3787.0 173.5 L3895.0 173.5" fill="none" data-name="SmsModule"></path>
+</g>
+<g transform="translate(3787, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SmsModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SmsModule" data-compartment="0">
+<a id="src\modules\sms\sms.module.ts.SmsModule" xlink:href="src\modules\sms\sms.module.ts"><text x="46.0" y="14.1" stroke="none" text-anchor="middle" data-name="SmsModule" data-compartment="0">SmsModule</text></a>
+
+</g>
+</g>
+<g transform="translate(3787, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SmsModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SmsModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(3787, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SmsModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SmsModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="TaskModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="TaskModule">
+<rect x="3935.0" y="133.5" height="48.0" width="112.0" data-name="TaskModule"></rect>
+<path d="M3935.0 165.5 L4047.0 165.5" fill="none" data-name="TaskModule"></path>
+<path d="M3935.0 173.5 L4047.0 173.5" fill="none" data-name="TaskModule"></path>
+</g>
+<g transform="translate(3935, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="TaskModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TaskModule" data-compartment="0">
+<a id="src\modules\task\task.module.ts.TaskModule" xlink:href="src\modules\task\task.module.ts"><text x="48.0" y="14.1" stroke="none" text-anchor="middle" data-name="TaskModule" data-compartment="0">TaskModule</text></a>
+
+</g>
+</g>
+<g transform="translate(3935, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TaskModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="TaskModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(3935, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TaskModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="TaskModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="UserModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="UserModule">
+<rect x="4087.0" y="133.5" height="48.0" width="111.0" data-name="UserModule"></rect>
+<path d="M4087.0 165.5 L4198.0 165.5" fill="none" data-name="UserModule"></path>
+<path d="M4087.0 173.5 L4198.0 173.5" fill="none" data-name="UserModule"></path>
+</g>
+<g transform="translate(4087, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UserModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UserModule" data-compartment="0">
+<a id="src\modules\user\user.module.ts.UserModule" xlink:href="src\modules\user\user.module.ts"><text x="47.5" y="14.1" stroke="none" text-anchor="middle" data-name="UserModule" data-compartment="0">UserModule</text></a>
+
+</g>
+</g>
+<g transform="translate(4087, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UserModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(4087, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UserModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="JwtStrategy">
+<g fill="#eee8d5" stroke="#33322E" data-name="JwtStrategy">
+<rect x="4238.0" y="121.5" height="72.0" width="224.0" data-name="JwtStrategy"></rect>
+<path d="M4238.0 153.5 L4462.0 153.5" fill="none" data-name="JwtStrategy"></path>
+<path d="M4238.0 161.5 L4462.0 161.5" fill="none" data-name="JwtStrategy"></path>
+</g>
+<g transform="translate(4238, 121.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="JwtStrategy" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JwtStrategy" data-compartment="0">
+<a id="src\common\auth\strategies\jwt.strategy.ts.JwtStrategy" xlink:href="src\common\auth\strategies\jwt.strategy.ts"><text x="104.0" y="14.1" stroke="none" text-anchor="middle" data-name="JwtStrategy" data-compartment="0">JwtStrategy</text></a>
+
+</g>
+</g>
+<g transform="translate(4238, 153.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtStrategy" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JwtStrategy" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(4238, 161.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtStrategy" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="JwtStrategy" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="JwtStrategy" data-compartment="2">+validate(): ValidateResult</text>
+
+</g>
+</g>
+</g>
+<g data-name="JwtPayload">
+<g fill="lightblue" stroke="#33322E" data-name="JwtPayload">
+<rect x="4502.0" y="113.5" height="88.0" width="139.0" data-name="JwtPayload"></rect>
+<path d="M4502.0 145.5 L4641.0 145.5" fill="none" data-name="JwtPayload"></path>
+<path d="M4502.0 193.5 L4641.0 193.5" fill="none" data-name="JwtPayload"></path>
+</g>
+<g transform="translate(4502, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtPayload" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JwtPayload" data-compartment="0">
+<a id="src\common\auth\strategies\jwt.strategy.ts.JwtPayload" xlink:href="src\common\auth\strategies\jwt.strategy.ts"><text x="61.5" y="14.1" stroke="none" text-anchor="middle" data-name="JwtPayload" data-compartment="0">JwtPayload</text></a>
+
+</g>
+</g>
+<g transform="translate(4502, 145.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtPayload" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="JwtPayload" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="JwtPayload" data-compartment="1">+sub: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="JwtPayload" data-compartment="1">+role: UserRole</text>
+
+</g>
+</g>
+<g transform="translate(4502, 193.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtPayload" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JwtPayload" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="ValidateResult">
+<g fill="lightblue" stroke="#33322E" data-name="ValidateResult">
+<rect x="4681.0" y="113.5" height="88.0" width="139.0" data-name="ValidateResult"></rect>
+<path d="M4681.0 145.5 L4820.0 145.5" fill="none" data-name="ValidateResult"></path>
+<path d="M4681.0 193.5 L4820.0 193.5" fill="none" data-name="ValidateResult"></path>
+</g>
+<g transform="translate(4681, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ValidateResult" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ValidateResult" data-compartment="0">
+<a id="src\common\auth\strategies\jwt.strategy.ts.ValidateResult" xlink:href="src\common\auth\strategies\jwt.strategy.ts"><text x="61.5" y="14.1" stroke="none" text-anchor="middle" data-name="ValidateResult" data-compartment="0">ValidateResult</text></a>
+
+</g>
+</g>
+<g transform="translate(4681, 145.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ValidateResult" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ValidateResult" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ValidateResult" data-compartment="1">+sub: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ValidateResult" data-compartment="1">+role: UserRole</text>
+
+</g>
+</g>
+<g transform="translate(4681, 193.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ValidateResult" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ValidateResult" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Event">
+<g fill="#eee8d5" stroke="#33322E" data-name="Event">
+<rect x="4860.0" y="0.0" height="315.0" width="222.0" data-name="Event"></rect>
+<path d="M4860.0 32.0 L5082.0 32.0" fill="none" data-name="Event"></path>
+<path d="M4860.0 307.0 L5082.0 307.0" fill="none" data-name="Event"></path>
+</g>
+<g transform="translate(4860, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Event" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Event" data-compartment="0">
+<a id="src\common\models\types\event.entity.ts.Event" xlink:href="src\common\models\types\event.entity.ts"><text x="103.0" y="14.1" stroke="none" text-anchor="middle" data-name="Event" data-compartment="0">Event</text></a>
+
+</g>
+</g>
+<g transform="translate(4860, 32)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Event" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Event" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Event" data-compartment="1">+id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Event" data-compartment="1">+titre: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="Event" data-compartment="1">+description: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="Event" data-compartment="1">+date: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="Event" data-compartment="1">+heure: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="Event" data-compartment="1">+lieu: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="Event" data-compartment="1">+capacite: number</text>
+<text x="0.0" y="127.5" stroke="none" data-name="Event" data-compartment="1">+organisateur: User</text>
+<text x="0.0" y="143.7" stroke="none" data-name="Event" data-compartment="1">+participants: Participant[]</text>
+<text x="0.0" y="159.9" stroke="none" data-name="Event" data-compartment="1">+messages: Message[]</text>
+<text x="0.0" y="176.1" stroke="none" data-name="Event" data-compartment="1">+status: EventStatus</text>
+<text x="0.0" y="192.3" stroke="none" data-name="Event" data-compartment="1">+imageUrl: string</text>
+<text x="0.0" y="208.5" stroke="none" data-name="Event" data-compartment="1">+formUrl?: string</text>
+<text x="0.0" y="224.7" stroke="none" data-name="Event" data-compartment="1">+tasks: Task[]</text>
+<text x="0.0" y="240.9" stroke="none" data-name="Event" data-compartment="1">+isPrivate: boolean</text>
+<text x="0.0" y="257.1" stroke="none" data-name="Event" data-compartment="1">+invitedIds: string[]</text>
+
+</g>
+</g>
+<g transform="translate(4860, 307)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Event" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Event" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Message">
+<g fill="#eee8d5" stroke="#33322E" data-name="Message">
+<rect x="5122.0" y="56.5" height="202.0" width="236.0" data-name="Message"></rect>
+<path d="M5122.0 88.5 L5358.0 88.5" fill="none" data-name="Message"></path>
+<path d="M5122.0 250.5 L5358.0 250.5" fill="none" data-name="Message"></path>
+</g>
+<g transform="translate(5122, 56.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Message" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Message" data-compartment="0">
+<a id="src\common\models\types\message.entity.ts.Message" xlink:href="src\common\models\types\message.entity.ts"><text x="110.0" y="14.1" stroke="none" text-anchor="middle" data-name="Message" data-compartment="0">Message</text></a>
+
+</g>
+</g>
+<g transform="translate(5122, 88.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Message" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Message" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Message" data-compartment="1">+id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Message" data-compartment="1">+content: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="Message" data-compartment="1">+mediaUrl: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="Message" data-compartment="1">+sender: User</text>
+<text x="0.0" y="78.9" stroke="none" data-name="Message" data-compartment="1">+event: Event</text>
+<text x="0.0" y="95.1" stroke="none" data-name="Message" data-compartment="1">+timestamp: Date</text>
+<text x="0.0" y="111.3" stroke="none" data-name="Message" data-compartment="1">+deletedForAll: boolean</text>
+<text x="0.0" y="127.5" stroke="none" data-name="Message" data-compartment="1">+deletedForUserIds: string[]</text>
+<text x="0.0" y="143.7" stroke="none" data-name="Message" data-compartment="1">+seenBy: string[]</text>
+
+</g>
+</g>
+<g transform="translate(5122, 250.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Message" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Message" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Notification">
+<g fill="#eee8d5" stroke="#33322E" data-name="Notification">
+<rect x="5370.5" y="440.0" height="153.0" width="155.0" data-name="Notification"></rect>
+<path d="M5370.5 472.0 L5525.5 472.0" fill="none" data-name="Notification"></path>
+<path d="M5370.5 585.0 L5525.5 585.0" fill="none" data-name="Notification"></path>
+</g>
+<g transform="translate(5370.5, 440)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Notification" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Notification" data-compartment="0">
+<a id="src\common\models\types\notification.entity.ts.Notification" xlink:href="src\common\models\types\notification.entity.ts"><text x="69.5" y="14.1" stroke="none" text-anchor="middle" data-name="Notification" data-compartment="0">Notification</text></a>
+
+</g>
+</g>
+<g transform="translate(5370.5, 472)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Notification" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Notification" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Notification" data-compartment="1">+id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Notification" data-compartment="1">+title: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="Notification" data-compartment="1">+isRead: boolean</text>
+<text x="0.0" y="62.7" stroke="none" data-name="Notification" data-compartment="1">+user: User</text>
+<text x="0.0" y="78.9" stroke="none" data-name="Notification" data-compartment="1">+userId: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="Notification" data-compartment="1">+createdAt: Date</text>
+
+</g>
+</g>
+<g transform="translate(5370.5, 585)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Notification" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Notification" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="BaseEntity">
+<g fill="#eee8d5" stroke="#33322E" data-name="BaseEntity">
+<rect x="5398.0" y="141.5" height="32.0" width="100.0" data-name="BaseEntity"></rect>
+</g>
+<g transform="translate(5398, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="BaseEntity" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseEntity" data-compartment="0">
+<text x="42.0" y="14.1" stroke="none" text-anchor="middle" data-name="BaseEntity" data-compartment="0">BaseEntity</text>
+
+</g>
+</g>
+</g>
+<g data-name="Participant">
+<g fill="#eee8d5" stroke="#33322E" data-name="Participant">
+<rect x="5538.0" y="89.0" height="137.0" width="218.0" data-name="Participant"></rect>
+<path d="M5538.0 121.0 L5756.0 121.0" fill="none" data-name="Participant"></path>
+<path d="M5538.0 218.0 L5756.0 218.0" fill="none" data-name="Participant"></path>
+</g>
+<g transform="translate(5538, 89)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Participant" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Participant" data-compartment="0">
+<a id="src\common\models\types\participant.entity.ts.Participant" xlink:href="src\common\models\types\participant.entity.ts"><text x="101.0" y="14.1" stroke="none" text-anchor="middle" data-name="Participant" data-compartment="0">Participant</text></a>
+
+</g>
+</g>
+<g transform="translate(5538, 121)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Participant" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Participant" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Participant" data-compartment="1">+id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Participant" data-compartment="1">+user: User</text>
+<text x="0.0" y="46.5" stroke="none" data-name="Participant" data-compartment="1">+event: Event</text>
+<text x="0.0" y="62.7" stroke="none" data-name="Participant" data-compartment="1">+status: ParticipantStatus</text>
+<text x="0.0" y="78.9" stroke="none" data-name="Participant" data-compartment="1">+registeredAt: Date</text>
+
+</g>
+</g>
+<g transform="translate(5538, 218)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Participant" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Participant" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Task">
+<g fill="#eee8d5" stroke="#33322E" data-name="Task">
+<rect x="5796.0" y="73.0" height="169.0" width="172.0" data-name="Task"></rect>
+<path d="M5796.0 105.0 L5968.0 105.0" fill="none" data-name="Task"></path>
+<path d="M5796.0 234.0 L5968.0 234.0" fill="none" data-name="Task"></path>
+</g>
+<g transform="translate(5796, 73)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Task" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Task" data-compartment="0">
+<a id="src\common\models\types\task.entity.ts.Task" xlink:href="src\common\models\types\task.entity.ts"><text x="78.0" y="14.1" stroke="none" text-anchor="middle" data-name="Task" data-compartment="0">Task</text></a>
+
+</g>
+</g>
+<g transform="translate(5796, 105)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Task" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Task" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Task" data-compartment="1">+id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Task" data-compartment="1">+title: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="Task" data-compartment="1">+description: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="Task" data-compartment="1">+event: Event</text>
+<text x="0.0" y="78.9" stroke="none" data-name="Task" data-compartment="1">+assignedTo: User</text>
+<text x="0.0" y="95.1" stroke="none" data-name="Task" data-compartment="1">+status: TaskStatus</text>
+<text x="0.0" y="111.3" stroke="none" data-name="Task" data-compartment="1">+deadline: Date</text>
+
+</g>
+</g>
+<g transform="translate(5796, 234)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Task" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Task" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="User">
+<g fill="#eee8d5" stroke="#33322E" data-name="User">
+<rect x="1913.5" y="359.0" height="315.0" width="237.0" data-name="User"></rect>
+<path d="M1913.5 391.0 L2150.5 391.0" fill="none" data-name="User"></path>
+<path d="M1913.5 666.0 L2150.5 666.0" fill="none" data-name="User"></path>
+</g>
+<g transform="translate(1913.5, 359)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="User" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="User" data-compartment="0">
+<a id="src\common\models\types\user.entity.ts.User" xlink:href="src\common\models\types\user.entity.ts"><text x="110.5" y="14.1" stroke="none" text-anchor="middle" data-name="User" data-compartment="0">User</text></a>
+
+</g>
+</g>
+<g transform="translate(1913.5, 391)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="User" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="User" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="User" data-compartment="1">+id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="User" data-compartment="1">+nom: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="User" data-compartment="1">+email: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="User" data-compartment="1">+motDePasse: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="User" data-compartment="1">+role: UserRole</text>
+<text x="0.0" y="95.1" stroke="none" data-name="User" data-compartment="1">+phone: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="User" data-compartment="1">+department: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="User" data-compartment="1">+position: string</text>
+<text x="0.0" y="143.7" stroke="none" data-name="User" data-compartment="1">+location: string</text>
+<text x="0.0" y="159.9" stroke="none" data-name="User" data-compartment="1">+avatarUrl: string</text>
+<text x="0.0" y="176.1" stroke="none" data-name="User" data-compartment="1">+address: string</text>
+<text x="0.0" y="192.3" stroke="none" data-name="User" data-compartment="1">+participations: Participant[]</text>
+<text x="0.0" y="208.5" stroke="none" data-name="User" data-compartment="1">+organizingEvents: Event[]</text>
+<text x="0.0" y="224.7" stroke="none" data-name="User" data-compartment="1">+isEmailConfirmed: boolean</text>
+<text x="0.0" y="240.9" stroke="none" data-name="User" data-compartment="1">+resetToken?: string</text>
+<text x="0.0" y="257.1" stroke="none" data-name="User" data-compartment="1">+resetTokenExpires?: Date</text>
+
+</g>
+</g>
+<g transform="translate(1913.5, 666)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="User" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="User" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="AuthController">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthController">
+<rect x="6008.0" y="28.5" height="258.0" width="395.0" data-name="AuthController"></rect>
+<path d="M6008.0 60.5 L6403.0 60.5" fill="none" data-name="AuthController"></path>
+<path d="M6008.0 108.5 L6403.0 108.5" fill="none" data-name="AuthController"></path>
+</g>
+<g transform="translate(6008, 28.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthController" data-compartment="0">
+<a id="src\modules\auth\api\auth.controller.ts.AuthController" xlink:href="src\modules\auth\api\auth.controller.ts"><text x="189.5" y="14.1" stroke="none" text-anchor="middle" data-name="AuthController" data-compartment="0">AuthController</text></a>
+
+</g>
+</g>
+<g transform="translate(6008, 60.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthController" data-compartment="1">-authService: AuthService</text>
+<text x="0.0" y="30.3" stroke="none" data-name="AuthController" data-compartment="1">-userService: UserService</text>
+
+</g>
+</g>
+<g transform="translate(6008, 108.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthController" data-compartment="2">+register(): Promise&lt;User&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="AuthController" data-compartment="2">+login(): Promise&lt;{ access_token: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="AuthController" data-compartment="2">user: User</text>
+<text x="0.0" y="62.7" stroke="none" data-name="AuthController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="AuthController" data-compartment="2">+forgotPassword(): Promise&lt;{ message: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="AuthController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="AuthController" data-compartment="2">+changePassword(): Promise&lt;{ message: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="AuthController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="AuthController" data-compartment="2">+resetPassword(): Promise&lt;{ message: string</text>
+<text x="0.0" y="159.9" stroke="none" data-name="AuthController" data-compartment="2">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="AuthService">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthService">
+<rect x="6443.0" y="44.5" height="226.0" width="335.0" data-name="AuthService"></rect>
+<path d="M6443.0 76.5 L6778.0 76.5" fill="none" data-name="AuthService"></path>
+<path d="M6443.0 141.5 L6778.0 141.5" fill="none" data-name="AuthService"></path>
+</g>
+<g transform="translate(6443, 44.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthService" data-compartment="0">
+<a id="src\modules\auth\api\auth.service.ts.AuthService" xlink:href="src\modules\auth\api\auth.service.ts"><text x="159.5" y="14.1" stroke="none" text-anchor="middle" data-name="AuthService" data-compartment="0">AuthService</text></a>
+
+</g>
+</g>
+<g transform="translate(6443, 76.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthService" data-compartment="1">-userRepository: Repository&lt;User&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="AuthService" data-compartment="1">-jwtService: JwtService</text>
+<text x="0.0" y="46.5" stroke="none" data-name="AuthService" data-compartment="1">-mailService: MailService</text>
+
+</g>
+</g>
+<g transform="translate(6443, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthService" data-compartment="2">+validateUser(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="AuthService" data-compartment="2">+login(): Promise&lt;{ access_token: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="AuthService" data-compartment="2">user: User</text>
+<text x="0.0" y="62.7" stroke="none" data-name="AuthService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="AuthService" data-compartment="2">+forgotPassword(): Promise&lt;void&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="AuthService" data-compartment="2">+resetPassword(): Promise&lt;void&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="AuthService" data-compartment="2">+changePassword(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="ForgotPasswordDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="ForgotPasswordDto">
+<rect x="6818.0" y="121.5" height="72.0" width="171.0" data-name="ForgotPasswordDto"></rect>
+<path d="M6818.0 153.5 L6989.0 153.5" fill="none" data-name="ForgotPasswordDto"></path>
+<path d="M6818.0 185.5 L6989.0 185.5" fill="none" data-name="ForgotPasswordDto"></path>
+</g>
+<g transform="translate(6818, 121.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ForgotPasswordDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ForgotPasswordDto" data-compartment="0">
+<a id="src\modules\auth\dto\forgot-password.dto.ts.ForgotPasswordDto" xlink:href="src\modules\auth\dto\forgot-password.dto.ts"><text x="77.5" y="14.1" stroke="none" text-anchor="middle" data-name="ForgotPasswordDto" data-compartment="0">ForgotPasswordDto</text></a>
+
+</g>
+</g>
+<g transform="translate(6818, 153.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ForgotPasswordDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ForgotPasswordDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ForgotPasswordDto" data-compartment="1">+email: string</text>
+
+</g>
+</g>
+<g transform="translate(6818, 185.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ForgotPasswordDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ForgotPasswordDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="LoginDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="LoginDto">
+<rect x="7029.0" y="113.5" height="88.0" width="180.0" data-name="LoginDto"></rect>
+<path d="M7029.0 145.5 L7209.0 145.5" fill="none" data-name="LoginDto"></path>
+<path d="M7029.0 193.5 L7209.0 193.5" fill="none" data-name="LoginDto"></path>
+</g>
+<g transform="translate(7029, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="LoginDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LoginDto" data-compartment="0">
+<a id="src\modules\auth\dto\login.dto.ts.LoginDto" xlink:href="src\modules\auth\dto\login.dto.ts"><text x="82.0" y="14.1" stroke="none" text-anchor="middle" data-name="LoginDto" data-compartment="0">LoginDto</text></a>
+
+</g>
+</g>
+<g transform="translate(7029, 145.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LoginDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LoginDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="LoginDto" data-compartment="1">+email: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="LoginDto" data-compartment="1">+motDePasse: string</text>
+
+</g>
+</g>
+<g transform="translate(7029, 193.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LoginDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LoginDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="ResetPasswordDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="ResetPasswordDto">
+<rect x="7249.0" y="113.5" height="88.0" width="189.0" data-name="ResetPasswordDto"></rect>
+<path d="M7249.0 145.5 L7438.0 145.5" fill="none" data-name="ResetPasswordDto"></path>
+<path d="M7249.0 193.5 L7438.0 193.5" fill="none" data-name="ResetPasswordDto"></path>
+</g>
+<g transform="translate(7249, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ResetPasswordDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ResetPasswordDto" data-compartment="0">
+<a id="src\modules\auth\dto\reset-password.dto.ts.ResetPasswordDto" xlink:href="src\modules\auth\dto\reset-password.dto.ts"><text x="86.5" y="14.1" stroke="none" text-anchor="middle" data-name="ResetPasswordDto" data-compartment="0">ResetPasswordDto</text></a>
+
+</g>
+</g>
+<g transform="translate(7249, 145.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ResetPasswordDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ResetPasswordDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ResetPasswordDto" data-compartment="1">+token: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ResetPasswordDto" data-compartment="1">+newPassword: string</text>
+
+</g>
+</g>
+<g transform="translate(7249, 193.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ResetPasswordDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ResetPasswordDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="ChatController">
+<g fill="#eee8d5" stroke="#33322E" data-name="ChatController">
+<rect x="7478.0" y="93.0" height="129.0" width="372.0" data-name="ChatController"></rect>
+<path d="M7478.0 125.0 L7850.0 125.0" fill="none" data-name="ChatController"></path>
+<path d="M7478.0 157.0 L7850.0 157.0" fill="none" data-name="ChatController"></path>
+</g>
+<g transform="translate(7478, 93)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ChatController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ChatController" data-compartment="0">
+<a id="src\modules\chat\api\chat.controller.ts.ChatController" xlink:href="src\modules\chat\api\chat.controller.ts"><text x="178.0" y="14.1" stroke="none" text-anchor="middle" data-name="ChatController" data-compartment="0">ChatController</text></a>
+
+</g>
+</g>
+<g transform="translate(7478, 125)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ChatController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ChatController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ChatController" data-compartment="1">-chatService: ChatService</text>
+
+</g>
+</g>
+<g transform="translate(7478, 157)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ChatController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ChatController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="ChatController" data-compartment="2">+createMessage(): Promise&lt;Message&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ChatController" data-compartment="2">+countMessages(): Promise&lt;{ count: number</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ChatController" data-compartment="2">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="ChatGateway">
+<g fill="#eee8d5" stroke="#33322E" data-name="ChatGateway">
+<rect x="7881.5" y="355.0" height="323.0" width="649.0" data-name="ChatGateway"></rect>
+<path d="M7881.5 387.0 L8530.5 387.0" fill="none" data-name="ChatGateway"></path>
+<path d="M7881.5 500.0 L8530.5 500.0" fill="none" data-name="ChatGateway"></path>
+</g>
+<g transform="translate(7881.5, 355)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ChatGateway" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ChatGateway" data-compartment="0">
+<a id="src\modules\chat\api\chat.gateway.ts.ChatGateway" xlink:href="src\modules\chat\api\chat.gateway.ts"><text x="316.5" y="14.1" stroke="none" text-anchor="middle" data-name="ChatGateway" data-compartment="0">ChatGateway</text></a>
+
+</g>
+</g>
+<g transform="translate(7881.5, 387)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ChatGateway" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ChatGateway" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ChatGateway" data-compartment="1">-logger: Logger</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ChatGateway" data-compartment="1">+server: Server&lt;DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ChatGateway" data-compartment="1">-chatService: ChatService</text>
+<text x="0.0" y="62.7" stroke="none" data-name="ChatGateway" data-compartment="1">-notificationService: NotificationService</text>
+<text x="0.0" y="78.9" stroke="none" data-name="ChatGateway" data-compartment="1">-mailService: MailService</text>
+<text x="0.0" y="95.1" stroke="none" data-name="ChatGateway" data-compartment="1">-eventRepository: Repository&lt;Event&gt;</text>
+
+</g>
+</g>
+<g transform="translate(7881.5, 500)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ChatGateway" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ChatGateway" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="ChatGateway" data-compartment="2">+afterInit(): void</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ChatGateway" data-compartment="2">+handleConnection(): void</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ChatGateway" data-compartment="2">+handleDisconnect(): void</text>
+<text x="0.0" y="62.7" stroke="none" data-name="ChatGateway" data-compartment="2">+handleJoinEvent(): Promise&lt;void&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="ChatGateway" data-compartment="2">+handleMarkAsSeen(): Promise&lt;void&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="ChatGateway" data-compartment="2">+handleDeleteForMe(): Promise&lt;void&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="ChatGateway" data-compartment="2">+handleDeleteForAll(): Promise&lt;void&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="ChatGateway" data-compartment="2">+handleJoinUserRoom(): Promise&lt;void&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="ChatGateway" data-compartment="2">+handleSendMessage(): Promise&lt;void&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="ChatGateway" data-compartment="2">+handleGetMessages(): Promise&lt;any&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="OnGatewayInit&lt;T&gt;">
+<g fill="#eee8d5" stroke="#33322E" data-name="OnGatewayInit&lt;T&gt;">
+<rect x="7890.0" y="141.5" height="32.0" width="162.0" data-name="OnGatewayInit&lt;T&gt;"></rect>
+</g>
+<g transform="translate(7890, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="OnGatewayInit&lt;T&gt;" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="OnGatewayInit&lt;T&gt;" data-compartment="0">
+<text x="73.0" y="14.1" stroke="none" text-anchor="middle" data-name="OnGatewayInit&lt;T&gt;" data-compartment="0">OnGatewayInit&lt;T&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="OnGatewayConnection&lt;T&gt;">
+<g fill="#eee8d5" stroke="#33322E" data-name="OnGatewayConnection&lt;T&gt;">
+<rect x="8092.0" y="141.5" height="32.0" width="228.0" data-name="OnGatewayConnection&lt;T&gt;"></rect>
+</g>
+<g transform="translate(8092, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="OnGatewayConnection&lt;T&gt;" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="OnGatewayConnection&lt;T&gt;" data-compartment="0">
+<text x="106.0" y="14.1" stroke="none" text-anchor="middle" data-name="OnGatewayConnection&lt;T&gt;" data-compartment="0">OnGatewayConnection&lt;T&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="OnGatewayDisconnect&lt;T&gt;">
+<g fill="#eee8d5" stroke="#33322E" data-name="OnGatewayDisconnect&lt;T&gt;">
+<rect x="8360.0" y="141.5" height="32.0" width="226.0" data-name="OnGatewayDisconnect&lt;T&gt;"></rect>
+</g>
+<g transform="translate(8360, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="OnGatewayDisconnect&lt;T&gt;" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="OnGatewayDisconnect&lt;T&gt;" data-compartment="0">
+<text x="105.0" y="14.1" stroke="none" text-anchor="middle" data-name="OnGatewayDisconnect&lt;T&gt;" data-compartment="0">OnGatewayDisconnect&lt;T&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="ChatService">
+<g fill="#eee8d5" stroke="#33322E" data-name="ChatService">
+<rect x="8626.0" y="12.0" height="291.0" width="391.0" data-name="ChatService"></rect>
+<path d="M8626.0 44.0 L9017.0 44.0" fill="none" data-name="ChatService"></path>
+<path d="M8626.0 141.0 L9017.0 141.0" fill="none" data-name="ChatService"></path>
+</g>
+<g transform="translate(8626, 12)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ChatService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ChatService" data-compartment="0">
+<a id="src\modules\chat\api\chat.service.ts.ChatService" xlink:href="src\modules\chat\api\chat.service.ts"><text x="187.5" y="14.1" stroke="none" text-anchor="middle" data-name="ChatService" data-compartment="0">ChatService</text></a>
+
+</g>
+</g>
+<g transform="translate(8626, 44)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ChatService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ChatService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ChatService" data-compartment="1">-messageRepo: Repository&lt;Message&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ChatService" data-compartment="1">-userRepo: Repository&lt;User&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ChatService" data-compartment="1">-eventRepo: Repository&lt;Event&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="ChatService" data-compartment="1">-participantRepo: Repository&lt;Participant&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="ChatService" data-compartment="1">-notificationService: NotificationService</text>
+
+</g>
+</g>
+<g transform="translate(8626, 141)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ChatService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ChatService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="ChatService" data-compartment="2">+saveMessage(): Promise&lt;Message&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ChatService" data-compartment="2">+findUserByName(): Promise&lt;User&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ChatService" data-compartment="2">+isParticipant(): Promise&lt;boolean&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="ChatService" data-compartment="2">+markAsSeen(): Promise&lt;void&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="ChatService" data-compartment="2">+deleteForMe(): Promise&lt;void&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="ChatService" data-compartment="2">+countAll(): Promise&lt;{ count: number</text>
+<text x="0.0" y="111.3" stroke="none" data-name="ChatService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="ChatService" data-compartment="2">+deleteForAll(): Promise&lt;void&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="ChatService" data-compartment="2">+getMessagesForEvent(): Promise&lt;Message[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CloudinaryController">
+<g fill="#eee8d5" stroke="#33322E" data-name="CloudinaryController">
+<rect x="9057.0" y="61.0" height="193.0" width="405.0" data-name="CloudinaryController"></rect>
+<path d="M9057.0 93.0 L9462.0 93.0" fill="none" data-name="CloudinaryController"></path>
+<path d="M9057.0 141.0 L9462.0 141.0" fill="none" data-name="CloudinaryController"></path>
+</g>
+<g transform="translate(9057, 61)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CloudinaryController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CloudinaryController" data-compartment="0">
+<a id="src\modules\cloudinary\api\cloudinary.controller.ts.CloudinaryController" xlink:href="src\modules\cloudinary\api\cloudinary.controller.ts"><text x="194.5" y="14.1" stroke="none" text-anchor="middle" data-name="CloudinaryController" data-compartment="0">CloudinaryController</text></a>
+
+</g>
+</g>
+<g transform="translate(9057, 93)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CloudinaryController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CloudinaryController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CloudinaryController" data-compartment="1">-cloudinaryService: CloudinaryService</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CloudinaryController" data-compartment="1">-usersService: UserService</text>
+
+</g>
+</g>
+<g transform="translate(9057, 141)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CloudinaryController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CloudinaryController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="CloudinaryController" data-compartment="2">+uploadAvatar(): Promise&lt;{ avatarUrl: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CloudinaryController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CloudinaryController" data-compartment="2">+uploadEventImage(): Promise&lt;{ imageUrl: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CloudinaryController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="CloudinaryController" data-compartment="2">+uploadChatFile(): Promise&lt;{ url: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="CloudinaryController" data-compartment="2">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CloudinaryService">
+<g fill="#eee8d5" stroke="#33322E" data-name="CloudinaryService">
+<rect x="9502.0" y="109.5" height="96.0" width="590.0" data-name="CloudinaryService"></rect>
+<path d="M9502.0 141.5 L10092.0 141.5" fill="none" data-name="CloudinaryService"></path>
+<path d="M9502.0 173.5 L10092.0 173.5" fill="none" data-name="CloudinaryService"></path>
+</g>
+<g transform="translate(9502, 109.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CloudinaryService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CloudinaryService" data-compartment="0">
+<a id="src\modules\cloudinary\api\cloudinary.service.ts.CloudinaryService" xlink:href="src\modules\cloudinary\api\cloudinary.service.ts"><text x="287.0" y="14.1" stroke="none" text-anchor="middle" data-name="CloudinaryService" data-compartment="0">CloudinaryService</text></a>
+
+</g>
+</g>
+<g transform="translate(9502, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CloudinaryService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CloudinaryService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CloudinaryService" data-compartment="1">-configService: ConfigService&lt;Record&lt;string | symbol, unknown&gt;, false&gt;</text>
+
+</g>
+</g>
+<g transform="translate(9502, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CloudinaryService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CloudinaryService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="CloudinaryService" data-compartment="2">+uploadFromBuffer(): Promise&lt;string&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="EventsController">
+<g fill="#eee8d5" stroke="#33322E" data-name="EventsController">
+<rect x="10132.0" y="44.5" height="226.0" width="373.0" data-name="EventsController"></rect>
+<path d="M10132.0 76.5 L10505.0 76.5" fill="none" data-name="EventsController"></path>
+<path d="M10132.0 141.5 L10505.0 141.5" fill="none" data-name="EventsController"></path>
+</g>
+<g transform="translate(10132, 44.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="EventsController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EventsController" data-compartment="0">
+<a id="src\modules\event\api\event.controller.ts.EventsController" xlink:href="src\modules\event\api\event.controller.ts"><text x="178.5" y="14.1" stroke="none" text-anchor="middle" data-name="EventsController" data-compartment="0">EventsController</text></a>
+
+</g>
+</g>
+<g transform="translate(10132, 76.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventsController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EventsController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="EventsController" data-compartment="1">-eventRepository: Repository&lt;Event&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="EventsController" data-compartment="1">-eventsService: EventsService</text>
+<text x="0.0" y="46.5" stroke="none" data-name="EventsController" data-compartment="1">-dataSource: DataSource</text>
+
+</g>
+</g>
+<g transform="translate(10132, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventsController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EventsController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="EventsController" data-compartment="2">+create(): Promise&lt;Event&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="EventsController" data-compartment="2">+findAll(): Promise&lt;Event[]&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="EventsController" data-compartment="2">+addParticipant(): Promise&lt;{ message: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="EventsController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="EventsController" data-compartment="2">+findOne(): Promise&lt;Event&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="EventsController" data-compartment="2">+update(): Promise&lt;Event&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="EventsController" data-compartment="2">+remove(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="EventsService">
+<g fill="#eee8d5" stroke="#33322E" data-name="EventsService">
+<rect x="10545.0" y="20.5" height="274.0" width="399.0" data-name="EventsService"></rect>
+<path d="M10545.0 52.5 L10944.0 52.5" fill="none" data-name="EventsService"></path>
+<path d="M10545.0 165.5 L10944.0 165.5" fill="none" data-name="EventsService"></path>
+</g>
+<g transform="translate(10545, 20.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="EventsService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EventsService" data-compartment="0">
+<a id="src\modules\event\api\event.service.ts.EventsService" xlink:href="src\modules\event\api\event.service.ts"><text x="191.5" y="14.1" stroke="none" text-anchor="middle" data-name="EventsService" data-compartment="0">EventsService</text></a>
+
+</g>
+</g>
+<g transform="translate(10545, 52.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventsService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EventsService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="EventsService" data-compartment="1">-eventRepository: Repository&lt;Event&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="EventsService" data-compartment="1">-participantRepository: Repository&lt;Participant&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="EventsService" data-compartment="1">-userService: UserService</text>
+<text x="0.0" y="62.7" stroke="none" data-name="EventsService" data-compartment="1">-eventEmitter: EventEmitter2</text>
+<text x="0.0" y="78.9" stroke="none" data-name="EventsService" data-compartment="1">-notificationService: NotificationService</text>
+<text x="0.0" y="95.1" stroke="none" data-name="EventsService" data-compartment="1">-mailService: MailService</text>
+
+</g>
+</g>
+<g transform="translate(10545, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventsService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EventsService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="EventsService" data-compartment="2">+create(): Promise&lt;Event&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="EventsService" data-compartment="2">+addParticipantToEvent(): Promise&lt;void&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="EventsService" data-compartment="2">+findAll(): Promise&lt;Event[]&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="EventsService" data-compartment="2">+findOne(): Promise&lt;Event&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="EventsService" data-compartment="2">+update(): Promise&lt;Event&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="EventsService" data-compartment="2">+remove(): Promise&lt;void&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="EventsService" data-compartment="2">+updateEventStatusIfNeeded(): Promise&lt;Event&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CreateEventDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateEventDto">
+<rect x="10984.0" y="48.5" height="218.0" width="178.0" data-name="CreateEventDto"></rect>
+<path d="M10984.0 80.5 L11162.0 80.5" fill="none" data-name="CreateEventDto"></path>
+<path d="M10984.0 258.5 L11162.0 258.5" fill="none" data-name="CreateEventDto"></path>
+</g>
+<g transform="translate(10984, 48.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateEventDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateEventDto" data-compartment="0">
+<a id="src\modules\event\dto\create-event.dto.ts.CreateEventDto" xlink:href="src\modules\event\dto\create-event.dto.ts"><text x="81.0" y="14.1" stroke="none" text-anchor="middle" data-name="CreateEventDto" data-compartment="0">CreateEventDto</text></a>
+
+</g>
+</g>
+<g transform="translate(10984, 80.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateEventDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateEventDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreateEventDto" data-compartment="1">+titre: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreateEventDto" data-compartment="1">+description: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CreateEventDto" data-compartment="1">+date: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CreateEventDto" data-compartment="1">+heure: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="CreateEventDto" data-compartment="1">+lieu: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="CreateEventDto" data-compartment="1">+capacite: number</text>
+<text x="0.0" y="111.3" stroke="none" data-name="CreateEventDto" data-compartment="1">+formUrl: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="CreateEventDto" data-compartment="1">+imageUrl?: string</text>
+<text x="0.0" y="143.7" stroke="none" data-name="CreateEventDto" data-compartment="1">+isPrivate?: boolean</text>
+<text x="0.0" y="159.9" stroke="none" data-name="CreateEventDto" data-compartment="1">+invitedIds?: string[]</text>
+
+</g>
+</g>
+<g transform="translate(10984, 258.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateEventDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateEventDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="UpdateEventDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UpdateEventDto">
+<rect x="11202.0" y="48.5" height="218.0" width="213.0" data-name="UpdateEventDto"></rect>
+<path d="M11202.0 80.5 L11415.0 80.5" fill="none" data-name="UpdateEventDto"></path>
+<path d="M11202.0 258.5 L11415.0 258.5" fill="none" data-name="UpdateEventDto"></path>
+</g>
+<g transform="translate(11202, 48.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UpdateEventDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UpdateEventDto" data-compartment="0">
+<a id="src\modules\event\dto\update-event.dto.ts.UpdateEventDto" xlink:href="src\modules\event\dto\update-event.dto.ts"><text x="98.5" y="14.1" stroke="none" text-anchor="middle" data-name="UpdateEventDto" data-compartment="0">UpdateEventDto</text></a>
+
+</g>
+</g>
+<g transform="translate(11202, 80.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateEventDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UpdateEventDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="UpdateEventDto" data-compartment="1">+titre?: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UpdateEventDto" data-compartment="1">+description?: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UpdateEventDto" data-compartment="1">+date?: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="UpdateEventDto" data-compartment="1">+lieu?: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="UpdateEventDto" data-compartment="1">+capacite?: number</text>
+<text x="0.0" y="95.1" stroke="none" data-name="UpdateEventDto" data-compartment="1">+heure?: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="UpdateEventDto" data-compartment="1">+status?: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="UpdateEventDto" data-compartment="1">+formUrl: string</text>
+<text x="0.0" y="143.7" stroke="none" data-name="UpdateEventDto" data-compartment="1">+isPrivate?: boolean</text>
+<text x="0.0" y="159.9" stroke="none" data-name="UpdateEventDto" data-compartment="1">+invitedUserIds?: string[]</text>
+
+</g>
+</g>
+<g transform="translate(11202, 258.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateEventDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UpdateEventDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="EventCreatedListener">
+<g fill="#eee8d5" stroke="#33322E" data-name="EventCreatedListener">
+<rect x="11455.0" y="93.0" height="129.0" width="372.0" data-name="EventCreatedListener"></rect>
+<path d="M11455.0 125.0 L11827.0 125.0" fill="none" data-name="EventCreatedListener"></path>
+<path d="M11455.0 190.0 L11827.0 190.0" fill="none" data-name="EventCreatedListener"></path>
+</g>
+<g transform="translate(11455, 93)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="EventCreatedListener" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EventCreatedListener" data-compartment="0">
+<a id="src\modules\event\listeners\event-created.listener.ts.EventCreatedListener" xlink:href="src\modules\event\listeners\event-created.listener.ts"><text x="178.0" y="14.1" stroke="none" text-anchor="middle" data-name="EventCreatedListener" data-compartment="0">EventCreatedListener</text></a>
+
+</g>
+</g>
+<g transform="translate(11455, 125)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventCreatedListener" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EventCreatedListener" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="EventCreatedListener" data-compartment="1">-mailService: MailService</text>
+<text x="0.0" y="30.3" stroke="none" data-name="EventCreatedListener" data-compartment="1">-userService: UserService</text>
+<text x="0.0" y="46.5" stroke="none" data-name="EventCreatedListener" data-compartment="1">-eventService: EventsService</text>
+
+</g>
+</g>
+<g transform="translate(11455, 190)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventCreatedListener" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EventCreatedListener" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="EventCreatedListener" data-compartment="2">+handleEventCreatedEvent(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="EventCreatedPayload">
+<g fill="lightblue" stroke="#33322E" data-name="EventCreatedPayload">
+<rect x="11867.0" y="113.5" height="88.0" width="188.0" data-name="EventCreatedPayload"></rect>
+<path d="M11867.0 145.5 L12055.0 145.5" fill="none" data-name="EventCreatedPayload"></path>
+<path d="M11867.0 193.5 L12055.0 193.5" fill="none" data-name="EventCreatedPayload"></path>
+</g>
+<g transform="translate(11867, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventCreatedPayload" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EventCreatedPayload" data-compartment="0">
+<a id="src\modules\event\listeners\event-created.listener.ts.EventCreatedPayload" xlink:href="src\modules\event\listeners\event-created.listener.ts"><text x="86.0" y="14.1" stroke="none" text-anchor="middle" data-name="EventCreatedPayload" data-compartment="0">EventCreatedPayload</text></a>
+
+</g>
+</g>
+<g transform="translate(11867, 145.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventCreatedPayload" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EventCreatedPayload" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="EventCreatedPayload" data-compartment="1">+eventId: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="EventCreatedPayload" data-compartment="1">+titre: string</text>
+
+</g>
+</g>
+<g transform="translate(11867, 193.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EventCreatedPayload" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="EventCreatedPayload" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="NotificationController">
+<g fill="#eee8d5" stroke="#33322E" data-name="NotificationController">
+<rect x="12095.0" y="69.0" height="177.0" width="371.0" data-name="NotificationController"></rect>
+<path d="M12095.0 101.0 L12466.0 101.0" fill="none" data-name="NotificationController"></path>
+<path d="M12095.0 133.0 L12466.0 133.0" fill="none" data-name="NotificationController"></path>
+</g>
+<g transform="translate(12095, 69)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="NotificationController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="NotificationController" data-compartment="0">
+<a id="src\modules\notification\api\notification.controller.ts.NotificationController" xlink:href="src\modules\notification\api\notification.controller.ts"><text x="177.5" y="14.1" stroke="none" text-anchor="middle" data-name="NotificationController" data-compartment="0">NotificationController</text></a>
+
+</g>
+</g>
+<g transform="translate(12095, 101)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NotificationController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="NotificationController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="NotificationController" data-compartment="1">-notificationService: NotificationService</text>
+
+</g>
+</g>
+<g transform="translate(12095, 133)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NotificationController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="NotificationController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="NotificationController" data-compartment="2">+getNotifications(): Promise&lt;Notification[]&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="NotificationController" data-compartment="2">+markAsRead(): Promise&lt;void&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="NotificationController" data-compartment="2">+markAllAsRead(): Promise&lt;void&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="NotificationController" data-compartment="2">+getUnreadCount(): Promise&lt;number&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="NotificationController" data-compartment="2">+createNotification(): Promise&lt;any&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="NotificationController" data-compartment="2">+getAllNotifications(): Promise&lt;Notification[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="NotificationService">
+<g fill="#eee8d5" stroke="#33322E" data-name="NotificationService">
+<rect x="12506.0" y="69.0" height="177.0" width="322.0" data-name="NotificationService"></rect>
+<path d="M12506.0 101.0 L12828.0 101.0" fill="none" data-name="NotificationService"></path>
+<path d="M12506.0 133.0 L12828.0 133.0" fill="none" data-name="NotificationService"></path>
+</g>
+<g transform="translate(12506, 69)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="NotificationService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="NotificationService" data-compartment="0">
+<a id="src\modules\notification\api\notification.service.ts.NotificationService" xlink:href="src\modules\notification\api\notification.service.ts"><text x="153.0" y="14.1" stroke="none" text-anchor="middle" data-name="NotificationService" data-compartment="0">NotificationService</text></a>
+
+</g>
+</g>
+<g transform="translate(12506, 101)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NotificationService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="NotificationService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="NotificationService" data-compartment="1">-notifRepo: Repository&lt;Notification&gt;</text>
+
+</g>
+</g>
+<g transform="translate(12506, 133)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NotificationService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="NotificationService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="NotificationService" data-compartment="2">+create(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="NotificationService" data-compartment="2">+markAllAsRead(): Promise&lt;void&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="NotificationService" data-compartment="2">+markOneAsRead(): Promise&lt;void&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="NotificationService" data-compartment="2">+findForUser(): Promise&lt;Notification[]&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="NotificationService" data-compartment="2">+countUnread(): Promise&lt;number&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="NotificationService" data-compartment="2">+findAll(): Promise&lt;Notification[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="NotificationDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="NotificationDto">
+<rect x="12868.0" y="73.0" height="169.0" width="353.0" data-name="NotificationDto"></rect>
+<path d="M12868.0 105.0 L13221.0 105.0" fill="none" data-name="NotificationDto"></path>
+<path d="M12868.0 234.0 L13221.0 234.0" fill="none" data-name="NotificationDto"></path>
+</g>
+<g transform="translate(12868, 73)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="NotificationDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="NotificationDto" data-compartment="0">
+<a id="src\modules\notification\dto\notification.dto.ts.NotificationDto" xlink:href="src\modules\notification\dto\notification.dto.ts"><text x="168.5" y="14.1" stroke="none" text-anchor="middle" data-name="NotificationDto" data-compartment="0">NotificationDto</text></a>
+
+</g>
+</g>
+<g transform="translate(12868, 105)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NotificationDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="NotificationDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="NotificationDto" data-compartment="1">+id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="NotificationDto" data-compartment="1">+type: &quot;event&quot; | &quot;message&quot; | &quot;task&quot; | &quot;other&quot;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="NotificationDto" data-compartment="1">+eventId?: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="NotificationDto" data-compartment="1">+messageId?: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="NotificationDto" data-compartment="1">+title: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="NotificationDto" data-compartment="1">+isRead: boolean</text>
+<text x="0.0" y="111.3" stroke="none" data-name="NotificationDto" data-compartment="1">+createdAt: Date</text>
+
+</g>
+</g>
+<g transform="translate(12868, 234)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NotificationDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="NotificationDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="ParticipantsController">
+<g fill="#eee8d5" stroke="#33322E" data-name="ParticipantsController">
+<rect x="13261.0" y="69.0" height="177.0" width="357.0" data-name="ParticipantsController"></rect>
+<path d="M13261.0 101.0 L13618.0 101.0" fill="none" data-name="ParticipantsController"></path>
+<path d="M13261.0 133.0 L13618.0 133.0" fill="none" data-name="ParticipantsController"></path>
+</g>
+<g transform="translate(13261, 69)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ParticipantsController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ParticipantsController" data-compartment="0">
+<a id="src\modules\participant\api\participant.controller.ts.ParticipantsController" xlink:href="src\modules\participant\api\participant.controller.ts"><text x="170.5" y="14.1" stroke="none" text-anchor="middle" data-name="ParticipantsController" data-compartment="0">ParticipantsController</text></a>
+
+</g>
+</g>
+<g transform="translate(13261, 101)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParticipantsController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ParticipantsController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ParticipantsController" data-compartment="1">-participantsService: ParticipantsService</text>
+
+</g>
+</g>
+<g transform="translate(13261, 133)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParticipantsController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ParticipantsController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="ParticipantsController" data-compartment="2">+register(): Promise&lt;Participant&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ParticipantsController" data-compartment="2">+findAll(): Promise&lt;Participant[]&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ParticipantsController" data-compartment="2">+findByEvent(): Promise&lt;Participant[]&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="ParticipantsController" data-compartment="2">+remove(): Promise&lt;void&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="ParticipantsController" data-compartment="2">+removeByEventAndUser(): Promise&lt;void&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="ParticipantsController" data-compartment="2">+getByUser(): Promise&lt;Participant[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="ParticipantsService">
+<g fill="#eee8d5" stroke="#33322E" data-name="ParticipantsService">
+<rect x="13658.0" y="36.5" height="242.0" width="357.0" data-name="ParticipantsService"></rect>
+<path d="M13658.0 68.5 L14015.0 68.5" fill="none" data-name="ParticipantsService"></path>
+<path d="M13658.0 165.5 L14015.0 165.5" fill="none" data-name="ParticipantsService"></path>
+</g>
+<g transform="translate(13658, 36.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ParticipantsService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ParticipantsService" data-compartment="0">
+<a id="src\modules\participant\api\participant.service.ts.ParticipantsService" xlink:href="src\modules\participant\api\participant.service.ts"><text x="170.5" y="14.1" stroke="none" text-anchor="middle" data-name="ParticipantsService" data-compartment="0">ParticipantsService</text></a>
+
+</g>
+</g>
+<g transform="translate(13658, 68.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParticipantsService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ParticipantsService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ParticipantsService" data-compartment="1">-participantRepo: Repository&lt;Participant&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ParticipantsService" data-compartment="1">-userService: UserService</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ParticipantsService" data-compartment="1">-eventsService: EventsService</text>
+<text x="0.0" y="62.7" stroke="none" data-name="ParticipantsService" data-compartment="1">-mailService: MailService</text>
+<text x="0.0" y="78.9" stroke="none" data-name="ParticipantsService" data-compartment="1">-notificationService: NotificationService</text>
+
+</g>
+</g>
+<g transform="translate(13658, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParticipantsService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ParticipantsService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="ParticipantsService" data-compartment="2">+create(): Promise&lt;Participant&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ParticipantsService" data-compartment="2">+findAll(): Promise&lt;Participant[]&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ParticipantsService" data-compartment="2">+findByEvent(): Promise&lt;Participant[]&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="ParticipantsService" data-compartment="2">+remove(): Promise&lt;void&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="ParticipantsService" data-compartment="2">+removeByEventAndUser(): Promise&lt;void&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="ParticipantsService" data-compartment="2">+findByUser(): Promise&lt;Participant[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CreateParticipantDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateParticipantDto">
+<rect x="14055.0" y="113.5" height="88.0" width="180.0" data-name="CreateParticipantDto"></rect>
+<path d="M14055.0 145.5 L14235.0 145.5" fill="none" data-name="CreateParticipantDto"></path>
+<path d="M14055.0 193.5 L14235.0 193.5" fill="none" data-name="CreateParticipantDto"></path>
+</g>
+<g transform="translate(14055, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateParticipantDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateParticipantDto" data-compartment="0">
+<a id="src\modules\participant\dto\create-participant.dto.ts.CreateParticipantDto" xlink:href="src\modules\participant\dto\create-participant.dto.ts"><text x="82.0" y="14.1" stroke="none" text-anchor="middle" data-name="CreateParticipantDto" data-compartment="0">CreateParticipantDto</text></a>
+
+</g>
+</g>
+<g transform="translate(14055, 145.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateParticipantDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateParticipantDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreateParticipantDto" data-compartment="1">+userId: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreateParticipantDto" data-compartment="1">+eventId: string</text>
+
+</g>
+</g>
+<g transform="translate(14055, 193.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateParticipantDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateParticipantDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="UpdateParticipantDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UpdateParticipantDto">
+<rect x="14275.0" y="133.5" height="48.0" width="184.0" data-name="UpdateParticipantDto"></rect>
+<path d="M14275.0 165.5 L14459.0 165.5" fill="none" data-name="UpdateParticipantDto"></path>
+<path d="M14275.0 173.5 L14459.0 173.5" fill="none" data-name="UpdateParticipantDto"></path>
+</g>
+<g transform="translate(14275, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UpdateParticipantDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UpdateParticipantDto" data-compartment="0">
+<a id="src\modules\participant\dto\update-participant.dto.ts.UpdateParticipantDto" xlink:href="src\modules\participant\dto\update-participant.dto.ts"><text x="84.0" y="14.1" stroke="none" text-anchor="middle" data-name="UpdateParticipantDto" data-compartment="0">UpdateParticipantDto</text></a>
+
+</g>
+</g>
+<g transform="translate(14275, 165.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateParticipantDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UpdateParticipantDto" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(14275, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateParticipantDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UpdateParticipantDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="SmsController">
+<g fill="#eee8d5" stroke="#33322E" data-name="SmsController">
+<rect x="14499.0" y="109.5" height="96.0" width="234.0" data-name="SmsController"></rect>
+<path d="M14499.0 141.5 L14733.0 141.5" fill="none" data-name="SmsController"></path>
+<path d="M14499.0 173.5 L14733.0 173.5" fill="none" data-name="SmsController"></path>
+</g>
+<g transform="translate(14499, 109.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SmsController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SmsController" data-compartment="0">
+<a id="src\modules\sms\api\sms.controller.ts.SmsController" xlink:href="src\modules\sms\api\sms.controller.ts"><text x="109.0" y="14.1" stroke="none" text-anchor="middle" data-name="SmsController" data-compartment="0">SmsController</text></a>
+
+</g>
+</g>
+<g transform="translate(14499, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SmsController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SmsController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="SmsController" data-compartment="1">-smsService: SmsService</text>
+
+</g>
+</g>
+<g transform="translate(14499, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SmsController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SmsController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="SmsController" data-compartment="2">+sendSms(): Promise&lt;any&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="SmsService">
+<g fill="#eee8d5" stroke="#33322E" data-name="SmsService">
+<rect x="14773.0" y="109.5" height="96.0" width="234.0" data-name="SmsService"></rect>
+<path d="M14773.0 141.5 L15007.0 141.5" fill="none" data-name="SmsService"></path>
+<path d="M14773.0 173.5 L15007.0 173.5" fill="none" data-name="SmsService"></path>
+</g>
+<g transform="translate(14773, 109.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SmsService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SmsService" data-compartment="0">
+<a id="src\modules\sms\api\sms.service.ts.SmsService" xlink:href="src\modules\sms\api\sms.service.ts"><text x="109.0" y="14.1" stroke="none" text-anchor="middle" data-name="SmsService" data-compartment="0">SmsService</text></a>
+
+</g>
+</g>
+<g transform="translate(14773, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SmsService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SmsService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="SmsService" data-compartment="1">-vonage: Vonage</text>
+
+</g>
+</g>
+<g transform="translate(14773, 173.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SmsService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SmsService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="SmsService" data-compartment="2">+sendSms(): Promise&lt;any&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="TaskController">
+<g fill="#eee8d5" stroke="#33322E" data-name="TaskController">
+<rect x="15047.0" y="44.5" height="226.0" width="326.0" data-name="TaskController"></rect>
+<path d="M15047.0 76.5 L15373.0 76.5" fill="none" data-name="TaskController"></path>
+<path d="M15047.0 108.5 L15373.0 108.5" fill="none" data-name="TaskController"></path>
+</g>
+<g transform="translate(15047, 44.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="TaskController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TaskController" data-compartment="0">
+<a id="src\modules\task\api\task.controller.ts.TaskController" xlink:href="src\modules\task\api\task.controller.ts"><text x="155.0" y="14.1" stroke="none" text-anchor="middle" data-name="TaskController" data-compartment="0">TaskController</text></a>
+
+</g>
+</g>
+<g transform="translate(15047, 76.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TaskController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TaskController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="TaskController" data-compartment="1">-taskService: TaskService</text>
+
+</g>
+</g>
+<g transform="translate(15047, 108.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TaskController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TaskController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="TaskController" data-compartment="2">+createTask(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="TaskController" data-compartment="2">+updateDeadline(): Promise&lt;any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="TaskController" data-compartment="2">+updateStatus(): Promise&lt;any&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="TaskController" data-compartment="2">+updateAssignedUser(): Promise&lt;any&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="TaskController" data-compartment="2">+updateTitle(): Promise&lt;any&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="TaskController" data-compartment="2">+updateDescription(): Promise&lt;any&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="TaskController" data-compartment="2">+deleteTask(): Promise&lt;Task&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="TaskController" data-compartment="2">+getTasksByEvent(): Promise&lt;Task[]&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="TaskController" data-compartment="2">+getTasksByUser(): Promise&lt;Task[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="TaskService">
+<g fill="#eee8d5" stroke="#33322E" data-name="TaskService">
+<rect x="15413.0" y="12.0" height="291.0" width="326.0" data-name="TaskService"></rect>
+<path d="M15413.0 44.0 L15739.0 44.0" fill="none" data-name="TaskService"></path>
+<path d="M15413.0 141.0 L15739.0 141.0" fill="none" data-name="TaskService"></path>
+</g>
+<g transform="translate(15413, 12)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="TaskService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TaskService" data-compartment="0">
+<a id="src\modules\task\api\task.service.ts.TaskService" xlink:href="src\modules\task\api\task.service.ts"><text x="155.0" y="14.1" stroke="none" text-anchor="middle" data-name="TaskService" data-compartment="0">TaskService</text></a>
+
+</g>
+</g>
+<g transform="translate(15413, 44)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TaskService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TaskService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="TaskService" data-compartment="1">-taskRepository: Repository&lt;Task&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="TaskService" data-compartment="1">-eventRepository: Repository&lt;Event&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="TaskService" data-compartment="1">-userRepository: Repository&lt;User&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="TaskService" data-compartment="1">-mailService: MailService</text>
+<text x="0.0" y="78.9" stroke="none" data-name="TaskService" data-compartment="1">-notificationService: NotificationService</text>
+
+</g>
+</g>
+<g transform="translate(15413, 141)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TaskService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TaskService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="TaskService" data-compartment="2">+createTask(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="TaskService" data-compartment="2">+updateStatus(): Promise&lt;any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="TaskService" data-compartment="2">+updateAssignedUser(): Promise&lt;any&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="TaskService" data-compartment="2">+updateTitle(): Promise&lt;any&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="TaskService" data-compartment="2">+updateDescription(): Promise&lt;any&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="TaskService" data-compartment="2">+updateDeadline(): Promise&lt;any&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="TaskService" data-compartment="2">+deleteTask(): Promise&lt;Task&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="TaskService" data-compartment="2">+getTasksByEvent(): Promise&lt;Task[]&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="TaskService" data-compartment="2">+getTasksByUser(): Promise&lt;Task[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CreateTaskDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateTaskDto">
+<rect x="15779.0" y="105.0" height="105.0" width="167.0" data-name="CreateTaskDto"></rect>
+<path d="M15779.0 137.0 L15946.0 137.0" fill="none" data-name="CreateTaskDto"></path>
+<path d="M15779.0 202.0 L15946.0 202.0" fill="none" data-name="CreateTaskDto"></path>
+</g>
+<g transform="translate(15779, 105)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateTaskDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateTaskDto" data-compartment="0">
+<a id="src\modules\task\dto\create-task.dto.ts.CreateTaskDto" xlink:href="src\modules\task\dto\create-task.dto.ts"><text x="75.5" y="14.1" stroke="none" text-anchor="middle" data-name="CreateTaskDto" data-compartment="0">CreateTaskDto</text></a>
+
+</g>
+</g>
+<g transform="translate(15779, 137)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateTaskDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateTaskDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreateTaskDto" data-compartment="1">+title: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreateTaskDto" data-compartment="1">+description: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CreateTaskDto" data-compartment="1">+deadline?: Date</text>
+
+</g>
+</g>
+<g transform="translate(15779, 202)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateTaskDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateTaskDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="UserController">
+<g fill="#eee8d5" stroke="#33322E" data-name="UserController">
+<rect x="15986.0" y="44.5" height="226.0" width="342.0" data-name="UserController"></rect>
+<path d="M15986.0 76.5 L16328.0 76.5" fill="none" data-name="UserController"></path>
+<path d="M15986.0 108.5 L16328.0 108.5" fill="none" data-name="UserController"></path>
+</g>
+<g transform="translate(15986, 44.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UserController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UserController" data-compartment="0">
+<a id="src\modules\user\api\user.controller.ts.UserController" xlink:href="src\modules\user\api\user.controller.ts"><text x="163.0" y="14.1" stroke="none" text-anchor="middle" data-name="UserController" data-compartment="0">UserController</text></a>
+
+</g>
+</g>
+<g transform="translate(15986, 76.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="UserController" data-compartment="1">-userService: UserService</text>
+
+</g>
+</g>
+<g transform="translate(15986, 108.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="UserController" data-compartment="2">+getProfile(): Promise&lt;User&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UserController" data-compartment="2">+create(): Promise&lt;User&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UserController" data-compartment="2">+findAll(): Promise&lt;User[]&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="UserController" data-compartment="2">+update(): Promise&lt;User&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="UserController" data-compartment="2">+remove(): Promise&lt;void&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="UserController" data-compartment="2">+updateProfile(): Promise&lt;User&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="UserController" data-compartment="2">+participate(): Promise&lt;{ message: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="UserController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="UserController" data-compartment="2">+uploadCSV(): Promise&lt;unknown&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CsvUser">
+<g fill="lightgray" stroke="#33322E" data-name="CsvUser">
+<rect x="16368.0" y="56.5" height="202.0" width="190.0" data-name="CsvUser"></rect>
+<path d="M16368.0 88.5 L16558.0 88.5" fill="none" data-name="CsvUser"></path>
+<path d="M16368.0 250.5 L16558.0 250.5" fill="none" data-name="CsvUser"></path>
+</g>
+<g transform="translate(16368, 56.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CsvUser" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CsvUser" data-compartment="0">
+<a id="src\modules\user\api\user.controller.ts.CsvUser" xlink:href="src\modules\user\api\user.controller.ts"><text x="87.0" y="14.1" stroke="none" text-anchor="middle" data-name="CsvUser" data-compartment="0">CsvUser</text></a>
+
+</g>
+</g>
+<g transform="translate(16368, 88.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CsvUser" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CsvUser" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CsvUser" data-compartment="1">+nom: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CsvUser" data-compartment="1">+email: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CsvUser" data-compartment="1">+phone: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CsvUser" data-compartment="1">+role: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="CsvUser" data-compartment="1">+department: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="CsvUser" data-compartment="1">+position: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="CsvUser" data-compartment="1">+location: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="CsvUser" data-compartment="1">+address: string</text>
+<text x="0.0" y="143.7" stroke="none" data-name="CsvUser" data-compartment="1">+motDePasse?: string</text>
+
+</g>
+</g>
+<g transform="translate(16368, 250.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CsvUser" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CsvUser" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="UserService">
+<g fill="#eee8d5" stroke="#33322E" data-name="UserService">
+<rect x="16598.0" y="4.0" height="307.0" width="389.0" data-name="UserService"></rect>
+<path d="M16598.0 36.0 L16987.0 36.0" fill="none" data-name="UserService"></path>
+<path d="M16598.0 101.0 L16987.0 101.0" fill="none" data-name="UserService"></path>
+</g>
+<g transform="translate(16598, 4)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UserService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UserService" data-compartment="0">
+<a id="src\modules\user\api\user.service.ts.UserService" xlink:href="src\modules\user\api\user.service.ts"><text x="186.5" y="14.1" stroke="none" text-anchor="middle" data-name="UserService" data-compartment="0">UserService</text></a>
+
+</g>
+</g>
+<g transform="translate(16598, 36)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="UserService" data-compartment="1">-userRepository: Repository&lt;User&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UserService" data-compartment="1">-eventRepository: Repository&lt;Event&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UserService" data-compartment="1">-participantRepository: Repository&lt;Participant&gt;</text>
+
+</g>
+</g>
+<g transform="translate(16598, 101)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="UserService" data-compartment="2">+create(): Promise&lt;User&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UserService" data-compartment="2">+findAllExceptUser(): Promise&lt;User[]&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UserService" data-compartment="2">+findManyByIds(): Promise&lt;User[]&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="UserService" data-compartment="2">+findOne(): Promise&lt;User&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="UserService" data-compartment="2">+findAll(): Promise&lt;User[]&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="UserService" data-compartment="2">+updateAvatarUrl(): Promise&lt;void&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="UserService" data-compartment="2">+remove(): Promise&lt;void&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="UserService" data-compartment="2">+update(): Promise&lt;User&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="UserService" data-compartment="2">+participate(): Promise&lt;Participant&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="UserService" data-compartment="2">+findByEmail(): Promise&lt;any&gt;</text>
+<text x="0.0" y="176.1" stroke="none" data-name="UserService" data-compartment="2">+findById(): Promise&lt;any&gt;</text>
+<text x="0.0" y="192.3" stroke="none" data-name="UserService" data-compartment="2">+updateUser(): Promise&lt;any&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CreateUserDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateUserDto">
+<rect x="17027.0" y="56.5" height="202.0" width="180.0" data-name="CreateUserDto"></rect>
+<path d="M17027.0 88.5 L17207.0 88.5" fill="none" data-name="CreateUserDto"></path>
+<path d="M17027.0 250.5 L17207.0 250.5" fill="none" data-name="CreateUserDto"></path>
+</g>
+<g transform="translate(17027, 56.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateUserDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateUserDto" data-compartment="0">
+<a id="src\modules\user\dto\create-user.dto.ts.CreateUserDto" xlink:href="src\modules\user\dto\create-user.dto.ts"><text x="82.0" y="14.1" stroke="none" text-anchor="middle" data-name="CreateUserDto" data-compartment="0">CreateUserDto</text></a>
+
+</g>
+</g>
+<g transform="translate(17027, 88.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateUserDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateUserDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreateUserDto" data-compartment="1">+nom: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreateUserDto" data-compartment="1">+email: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CreateUserDto" data-compartment="1">+motDePasse: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CreateUserDto" data-compartment="1">+phone: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="CreateUserDto" data-compartment="1">+role: UserRole</text>
+<text x="0.0" y="95.1" stroke="none" data-name="CreateUserDto" data-compartment="1">+department: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="CreateUserDto" data-compartment="1">+position: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="CreateUserDto" data-compartment="1">+location: string</text>
+<text x="0.0" y="143.7" stroke="none" data-name="CreateUserDto" data-compartment="1">+address: string</text>
+
+</g>
+</g>
+<g transform="translate(17027, 250.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateUserDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateUserDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="UpdateUserDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UpdateUserDto">
+<rect x="17247.0" y="64.5" height="186.0" width="180.0" data-name="UpdateUserDto"></rect>
+<path d="M17247.0 96.5 L17427.0 96.5" fill="none" data-name="UpdateUserDto"></path>
+<path d="M17247.0 242.5 L17427.0 242.5" fill="none" data-name="UpdateUserDto"></path>
+</g>
+<g transform="translate(17247, 64.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UpdateUserDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UpdateUserDto" data-compartment="0">
+<a id="src\modules\user\dto\update-user.dto.ts.UpdateUserDto" xlink:href="src\modules\user\dto\update-user.dto.ts"><text x="82.0" y="14.1" stroke="none" text-anchor="middle" data-name="UpdateUserDto" data-compartment="0">UpdateUserDto</text></a>
+
+</g>
+</g>
+<g transform="translate(17247, 96.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateUserDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UpdateUserDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="UpdateUserDto" data-compartment="1">+nom?: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UpdateUserDto" data-compartment="1">+email?: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UpdateUserDto" data-compartment="1">+phone?: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="UpdateUserDto" data-compartment="1">+role?: UserRole</text>
+<text x="0.0" y="78.9" stroke="none" data-name="UpdateUserDto" data-compartment="1">+department?: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="UpdateUserDto" data-compartment="1">+position?: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="UpdateUserDto" data-compartment="1">+location?: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="UpdateUserDto" data-compartment="1">+address?: string</text>
+
+</g>
+</g>
+<g transform="translate(17247, 242.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateUserDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UpdateUserDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

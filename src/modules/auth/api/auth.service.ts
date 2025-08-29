@@ -102,12 +102,26 @@ async resetPassword(token: string, newPassword: string): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new UnauthorizedException('Utilisateur non trouvé');
 
+    // Hash et mise à jour du mot de passe
     user.motDePasse = await bcrypt.hash(newPassword, 10);
     await this.userRepository.save(user);
+
+    // ✅ Envoi d'un email de confirmation
+    await this.mailService.sendMail(
+      user.email,
+      'Mot de passe changé avec succès',
+      `Bonjour ${user.nom || ''},\n\nVotre mot de passe a été modifié avec succès. 
+      Si vous n'êtes pas à l'origine de cette modification, veuillez contacter notre support immédiatement.`,
+      `<p>Bonjour ${user.nom || ''},</p>
+       <p>Votre mot de passe a été <strong>modifié avec succès</strong>.</p>
+       <p>Si vous n'êtes pas à l'origine de cette action, contactez immédiatement notre support.</p>`
+    );
+
   } catch (error) {
     throw new UnauthorizedException('Token invalide ou expiré');
   }
 }
+
 
 
   async changePassword(

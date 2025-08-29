@@ -23,6 +23,7 @@ export class Notification extends BaseEntity {
   @ManyToOne(() => User, { eager: false })
   @JoinColumn({ name: 'userId' })
   user: User;
+  
 
   @Column()
   userId: string;

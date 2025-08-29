@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, Not } from 'typeorm';
+import { Repository, FindOptionsWhere, Not, In } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/common/models/types/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -45,6 +45,17 @@ export class UserService {
 
     return this.userRepository.save(user);
   }
+  async removeAvatar(userId: string): Promise<void> {
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+  if (!user) {
+    throw new NotFoundException('Utilisateur non trouvé');
+  }
+
+  // On met l'avatarUrl à null (ou chaîne vide)
+  user.avatarUrl = "";
+  await this.userRepository.save(user);
+}
+
   async findAllExceptUser(userId: string): Promise<User[]> {
     return this.userRepository.find({
       where: {
@@ -52,6 +63,13 @@ export class UserService {
       },
     });
   }
+
+async findManyByIds(ids: string[]): Promise<User[]> {
+  return this.userRepository.find({
+    where: { id: In(ids) },
+  });
+}
+
   
 
   // ✅ Récupérer un utilisateur par ID (profil)

@@ -1,5 +1,6 @@
 // src/events/dto/create-event.dto.ts
-import { IsString, IsDateString, IsInt, Matches} from 'class-validator';
+import { IsString, IsDateString, IsInt, Matches, IsOptional, IsBoolean, IsArray, IsUUID} from 'class-validator';
+import { Column } from 'typeorm';
 
 export class CreateEventDto {
   @IsString()
@@ -17,8 +18,25 @@ heure: string;
   @IsString()
   lieu: string;
 
+  @IsString()
+  @IsOptional()
+  sheetId?: string;
+
   @IsInt()
   capacite: number;
+  @Column({ nullable: true })
+formUrl: string;
+
+
   @IsString()
-  imageUrl?: string; // Optional field for event image URL
+  imageUrl?: string;
+   // Optional field for event image URL
+   @IsOptional()
+@IsBoolean()
+isPrivate?: boolean;
+@IsOptional()
+@IsArray()
+@IsUUID('all', { each: true })
+invitedIds?: string[];
+
 }

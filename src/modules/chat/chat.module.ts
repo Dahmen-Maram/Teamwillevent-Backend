@@ -8,12 +8,14 @@ import { ChatService } from './api/chat.service';
 import { ChatGateway } from './api/chat.gateway';
 import { ChatController } from './api/chat.controller';
 import { NotificationModule } from '../notification/notification.module';
+import { MailModule } from '../mail/mail.module';
 
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Message, User, Event, Participant]), 
-    NotificationModule// Maintenant correct
+    NotificationModule,
+    MailModule// Maintenant correct
   ],
   providers: [ChatService, ChatGateway],
   exports: [ChatService],

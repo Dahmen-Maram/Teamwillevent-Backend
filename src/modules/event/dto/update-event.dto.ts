@@ -1,5 +1,6 @@
 // src/events/dto/update-event.dto.ts
-import { IsString, IsDateString, IsInt, IsOptional } from 'class-validator';
+import { IsString, IsDateString, IsInt, IsOptional, IsBoolean, IsArray, IsUUID } from 'class-validator';
+import { Column } from 'typeorm';
 
 export class UpdateEventDto {
   @IsString()
@@ -18,6 +19,10 @@ export class UpdateEventDto {
   @IsOptional()
   lieu?: string;
 
+  @IsString()
+  @IsOptional()
+  sheetId?: string | null;
+
   @IsInt()
   @IsOptional()
   capacite?: number;
@@ -27,4 +32,16 @@ export class UpdateEventDto {
   @IsString()
   @IsOptional()
   status?: string;
+  @IsString()
+  @IsOptional()
+  formUrl?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isPrivate?: boolean;
+@IsOptional()
+@IsArray()
+@IsUUID('all', { each: true })
+invitedUserIds?: string[];
+
 }

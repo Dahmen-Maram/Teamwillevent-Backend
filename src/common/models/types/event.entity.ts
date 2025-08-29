@@ -12,6 +12,8 @@ import { User } from './user.entity';
 
 import { EventStatus } from 'src/common/enum/eventStatus.enum';
 import { Message } from './message.entity';
+import { Task } from './task.entity';
+
 
 @Entity()
 export class Event {
@@ -23,6 +25,7 @@ export class Event {
 
   @Column()
   description: string;
+
   @Column({ type: 'date' })
   date: string;
   @Column({ type: 'time', nullable: true }) 
@@ -46,6 +49,17 @@ messages: Message[];
 
  @Column({ nullable: true })
   status:EventStatus;
+  @Column({ nullable: true, type: 'varchar' })
+  imageUrl: string | null;
   @Column({ nullable: true })
-  imageUrl: string;
+formUrl?: string;
+@OneToMany(() => Task, (task) => task.event)
+tasks: Task[];
+@Column({ default: false }) // par défaut, l'événement est public
+isPrivate: boolean;
+@Column("uuid", { array: true, nullable: true })
+invitedIds: string[];
+@Column({ nullable: true })
+sheetId?: string;
+
 }

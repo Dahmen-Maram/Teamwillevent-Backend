@@ -69,8 +69,16 @@ export class ChatService {
 
   return savedMessage;
 }
+// chat.service.ts
+async findUserByName(nom: string) {
+  return this.userRepo.createQueryBuilder('user')
+    .where('LOWER(user.nom) LIKE LOWER(:nom)', { nom: `%${nom}%` })
+    .getOne();
+}
+
 
   
+
 
   async isParticipant(userId: string, eventId: string): Promise<boolean> {
     const count = await this.participantRepo.count({

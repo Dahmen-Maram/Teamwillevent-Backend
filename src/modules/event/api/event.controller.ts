@@ -9,21 +9,21 @@ import {
   UseGuards,
   Request,
   NotFoundException,
-  UnauthorizedException,
   InternalServerErrorException,
+  Req,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
-import { DataSource, LessThan, Repository,Not } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { CreateEventDto } from '../dto/create-event.dto';
 import { UpdateEventDto } from '../dto/update-event.dto';
 import { EventsService } from './event.service';
 import { UserRole } from 'src/common/enum/role.enum';
 import { Event } from 'src/common/models/types/event.entity';
-import { EventStatus } from 'src/common/enum/eventStatus.enum';
+
 
 @Controller('events')
 export class EventsController {
@@ -38,6 +38,17 @@ export class EventsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.RESPONSABLE)
+  @Delete(':id/image')
+  async deleteEventImage(@Param('id') id: string): Promise<void> {
+    const event = await this.eventsService.findOne(id);
+    if (!event) {
+      throw new NotFoundException(`Event with ID "${id}" not found`);
+    }
+    await this.eventsService.deleteEventImage(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.RESPONSABLE)
 @Post()
 async create(
@@ -47,24 +58,60 @@ async create(
   return this.eventsService.create(createEventDto, req.user.sub);
 }
 
- 
-@Get()
-async findAll(): Promise<Event[]> {
-  const now = new Date();
-  const nowStr = now.toISOString();  // string format ISO 8601
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.RESPONSABLE)
+@Put(':id/sheet')
+async updateSheetId(
+  @Param('id') id: string,
+  @Body('sheetId') sheetId: string,
+): Promise<Event> {
+  const event = await this.eventsService.findOne(id);
+  if (!event) {
+    throw new NotFoundException(`Event with ID "${id}" not found`);
+  }
 
-  await this.eventRepository.update(
-    {
-      date: LessThan(nowStr),        // compare string à string
-      status: Not(EventStatus.DONE),
-    },
-    {
-      status: EventStatus.DONE,
-    },
-  );
-
-  return this.eventRepository.find();
+  return this.eventsService.update(id, { sheetId });
 }
+
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.RESPONSABLE)
+@Delete(':id/sheet')
+async removeSheetId(@Param('id') id: string): Promise<Event> {
+  const event = await this.eventsService.findOne(id);
+  if (!event) {
+    throw new NotFoundException(`Event with ID "${id}" not found`);
+  }
+
+  return this.eventsService.update(id, { sheetId: null });
+}
+
+@Get(':id/sheet')
+async getSheetId(@Param('id') id: string): Promise<{ sheetId: string | null }> {
+  const event = await this.eventsService.findOne(id);
+  if (!event) {
+    throw new NotFoundException(`Event with ID "${id}" not found`);
+  }
+
+  return { sheetId: event.sheetId || null };
+}
+
+ 
+@UseGuards(JwtAuthGuard)
+@Get()
+async findAll(@Request() req: { user: { sub: string } }): Promise<Event[]> {
+  const userId = req.user.sub;
+  return this.eventsService.findAll(userId);
+}
+@Post(':id/add-participant/:userId')
+async addParticipant(
+  @Param('id') eventId: string,
+  @Param('userId') userId: string,
+  @Req() req: any, // Assure-toi que req.user.id est dispo
+) {
+  await this.eventsService.addParticipantToEvent(eventId, userId, req.user.id);
+  return { message: 'Participant ajouté avec succès.' };
+}
+
 
 
   @Get(':id')

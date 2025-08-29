@@ -8,6 +8,9 @@ import {
   Body,
   UseGuards,
   Request,
+  UploadedFile,
+  BadRequestException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'src/common/models/types/user.entity';
@@ -16,30 +19,45 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { CreateParticipantDto } from 'src/modules/participant/dto/create-participant.dto';
 
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import * as csv from 'csv-parser';
+import { createReadStream } from 'fs';
+import { UserRole } from 'src/common/enum/role.enum';
+
+type CsvUser = {
+  nom: string;
+  email: string;
+  phone: string;
+  role: string;
+  department: string;
+  position: string;
+  location: string;
+  address: string;
+  motDePasse?: string; // optionnel, on remplace par défaut
+};
+
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // 🔐 Get current authenticated user's profile
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(@Request() req: { user: { sub: string } }): Promise<User> {
     return this.userService.findOne(req.user.sub);
   }
 
-  // 👤 Create a new user (e.g. admin creates user or registration)
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 
-  // 📄 Get all users
   @Get()
   async findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
 
-  // 🔁 Update user by ID (admin use case)
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
@@ -48,15 +66,20 @@ export class UserController {
   ): Promise<User> {
     return this.userService.update(id, updateUserDto);
   }
-
-  // ❌ Delete user by ID
+@UseGuards(JwtAuthGuard)
+@Delete('avatar')  // Pas de paramètre userId dans l'URL
+async removeAvatar(@Request() req: { user: { sub: string } }) {
+  await this.userService.removeAvatar(req.user.sub);
+  return { message: 'Avatar supprimé avec succès' };
+}
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
     return this.userService.remove(id);
   }
 
-  // 👤 Update current logged-in user's profile (except password)
+
+
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateProfile(
@@ -66,7 +89,6 @@ export class UserController {
     return this.userService.update(req.user.sub, updateUserDto);
   }
 
-  // 📅 Allow user to participate in an event
   @UseGuards(JwtAuthGuard)
   @Post('participate')
   async participate(@Body() participateDto: CreateParticipantDto) {
@@ -76,4 +98,68 @@ export class UserController {
     );
     return { message: 'Inscription à l’événement réussie' };
   }
+
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          callback(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+ async uploadCSV(@UploadedFile() file: Express.Multer.File) {
+  if (!file) throw new BadRequestException('Aucun fichier fourni');
+
+  const users: CsvUser[] = [];
+  const results: { email: string; status: string; reason?: string }[] = [];
+
+  return new Promise((resolve, reject) => {
+    createReadStream(file.path)
+      .pipe(csv())
+      .on('data', (row: CsvUser) => {
+        users.push(row);
+      })
+      .on('end', async () => {
+        for (const userData of users) {
+          try {
+            // Trouver la valeur correspondante dans l'enum UserRole (insensible à la casse)
+            const roleValue = Object.values(UserRole).find(
+              (r) => r.toLowerCase() === userData.role.toLowerCase(),
+            );
+            if (!roleValue) {
+              throw new Error(`Role invalide: ${userData.role}`);
+            }
+
+            const user = await this.userService.create({
+              nom: userData.nom,
+              email: userData.email,
+              motDePasse: 'teamwill', // mot de passe par défaut
+              phone: userData.phone,
+              role: roleValue,
+              department: userData.department,
+              position: userData.position,
+              location: userData.location,
+              address: userData.address,
+            });
+
+            results.push({ email: user.email, status: 'success' });
+          } catch (err) {
+            results.push({
+              email: userData.email,
+              status: 'failed',
+              reason: err.message,
+            });
+          }
+        }
+
+        resolve(results);
+      })
+      .on('error', (error) => reject(error));
+  });
 }
+}
+

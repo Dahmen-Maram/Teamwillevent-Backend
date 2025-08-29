@@ -1,11 +1,10 @@
-// src/events/listeners/event-created.listener.ts
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { UserRole } from 'src/common/enum/role.enum';
 import { MailService } from 'src/common/utils/mail/mail.service';
 import { UserService } from 'src/modules/user/api/user.service';
+import { EventsService } from '../api/event.service';
 
-// Define the payload interface for event.created
 export interface EventCreatedPayload {
   eventId: string;
   titre: string;
@@ -16,6 +15,7 @@ export class EventCreatedListener {
   constructor(
     private readonly mailService: MailService,
     private readonly userService: UserService,
+    private readonly eventService: EventsService, // ✅ injecte EventsService
   ) {}
 
   @OnEvent('event.created')
@@ -27,10 +27,18 @@ export class EventCreatedListener {
     });
 
     try {
+      // ✅ vérifie le type d’événement (public ou privé)
+      const eventDetails = await this.eventService.findOne(event.eventId);
+
+      if (eventDetails.isPrivate) {
+        console.log('Événement privé détecté - pas de notification publique.');
+        return;
+      }
+
       const users = await this.userService.findAll();
       const recipients = users
         .filter(
-          (user) => !user.isEmailConfirmed && user.role === UserRole.EMPLOYEE, // <-- ajout du filtre sur le rôle
+          (user) => !user.isEmailConfirmed && user.role === UserRole.EMPLOYEE,
         )
         .map((user) => user.email);
 
@@ -49,6 +57,7 @@ export class EventCreatedListener {
             }),
         ),
       );
+
       console.log(`Emails sent to ${recipients.length} users`);
     } catch (error: unknown) {
       const errorMessage =

@@ -22,7 +22,17 @@ export class NotificationService {
 
     return this.notifRepo.save(notif);
   }
+  async delete(id: string, userId: string): Promise<void> {
+    const notification = await this.notifRepo.findOne({
+      where: { id, userId }
+    });
 
+    if (!notification) {
+      throw new NotFoundException('Notification not found');
+    }
+
+    await this.notifRepo.remove(notification);
+  }
   async markAllAsRead(userId: string): Promise<void> {
     await this.notifRepo.update({ userId }, { isRead: true });
   }

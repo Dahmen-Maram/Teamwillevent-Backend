@@ -36,5 +36,10 @@ async removeByEventAndUser(
 ): Promise<void> {
   return this.participantsService.removeByEventAndUser(eventId.trim(), userId.trim())
 }
+@Get('user/:userId')
+async getByUser(@Param('userId') userId: string): Promise<Participant[]> {
+  return this.participantsService.findByUser(userId);
+}
+
 
 }

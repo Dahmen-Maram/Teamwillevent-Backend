@@ -1,0 +1,6 @@
+nom,email,motDePasse,phone,role,department,position,location,address
+Ali Ben Salah,ali.bensalah@example.com,teamwill,12345678,Employee,IT,Developer,Tunis,12 rue de la République
+Amira Haddad,amira.haddad@example.com,teamwill,98765432,Responsable,HR,Manager,Sfax,34 avenue Bourguiba
+Youssef Trabelsi,youssef.trabelsi@example.com,teamwill,11223344,Employee,Finance,Analyst,Sousse,56 rue Ibn Khaldoun
+Noura Gharbi,noura.gharbi@example.com,teamwill,99887766,Employee,Marketing,Content Creator,Bizerte,78 avenue de la Liberté
+Karim Mezghani,karim.mezghani@example.com,teamwill,55667788,Responsable,IT,Lead Dev,Ariana,90 rue des Jasmins

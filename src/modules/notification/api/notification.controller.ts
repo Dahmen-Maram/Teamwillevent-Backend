@@ -1,7 +1,8 @@
 // src/modules/notification/notification.controller.ts
 
-import { Controller, Get, Patch, Param,Post,Body } from '@nestjs/common';
+import { Controller, Get, Patch, Param,Post,Body, Delete, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @Controller('notifications')
 export class NotificationController {
@@ -15,6 +16,14 @@ export class NotificationController {
   @Patch(':notifId/read')
   async markAsRead(@Param('notifId') notifId: string) {
     return this.notificationService.markOneAsRead(notifId);
+  }
+    @UseGuards(JwtAuthGuard)
+  @Delete(':id/:userId')
+  async deleteNotification(
+    @Param('id') id: string,
+    @Param('userId') userId: string
+  ): Promise<void> {
+    return this.notificationService.delete(id, userId);
   }
 
   @Patch('user/:userId/read-all')
